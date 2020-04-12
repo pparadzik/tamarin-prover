@@ -44,6 +44,7 @@ import           Term.Subsumption
 import           Term.Positions
 
 import           Theory.Model
+import           Term.Builtin.Convenience
 
 -- import           Debug.Trace
 
@@ -88,7 +89,11 @@ specialIntruderRules diff =
     , Rule IRecvRule [outFact x_var] [kdFact x_var] []                      []
     ] ++
     if diff 
-       then [ Rule IEqualityRule [kuFact x_var, kdFact x_var]  [] [] [] ]
+       then [ Rule IEqualityRule [kuFact x_var, kdFact x_var]  [] [] []
+            , Rule OracleDecRule
+              [kdFact (osenc(x_var, x_fresh_var)), kuFact (y_fresh_var)]
+              [kdFact (osdec(osenc(x_var, x_fresh_var), y_fresh_var))]
+              [kdFact (osdec(osenc(x_var, x_fresh_var), y_fresh_var))] [] ]
        else []
   where
     kuRule name prems t nvs = Rule name prems [kuFact t] [kuFact t] nvs
@@ -96,6 +101,7 @@ specialIntruderRules diff =
     x_var       = varTerm (LVar "x"  LSortMsg   0)
     x_pub_var   = varTerm (LVar "x"  LSortPub   0)
     x_fresh_var = varTerm (LVar "x"  LSortFresh 0)
+    y_fresh_var = varTerm (LVar "y"  LSortFresh 0)
 
 
 ------------------------------------------------------------------------------

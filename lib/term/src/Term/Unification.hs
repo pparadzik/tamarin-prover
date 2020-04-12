@@ -59,6 +59,7 @@ module Term.Unification (
   , locationReportMaudeSig
   , revealSignatureMaudeSig
   , hashMaudeSig
+  , oracleSymEncMaudeSig
   , rrulesForMaudeSig
   , stFunSyms
   , funSyms

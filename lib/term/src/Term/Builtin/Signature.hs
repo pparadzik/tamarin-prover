@@ -16,7 +16,7 @@ import qualified Data.Set as S
 ----------------------------------------------------------------------
 
 -- | Binary builtin function symbols.
-sdecSym, sencSym, adecSym, aencSym, signSym, revealSignSym, repSym, checkRepSym :: NoEqSym
+sdecSym, sencSym, adecSym, aencSym, signSym, revealSignSym, repSym, checkRepSym, osdecSym, osencSym :: NoEqSym
 sdecSym = ("sdec",(2, Public))
 sencSym = ("senc",(2, Public))
 adecSym = ("adec",(2, Public))
@@ -25,6 +25,8 @@ signSym = ("sign",(2, Public))
 revealSignSym = ("revealSign",(2, Public))
 repSym = ("rep",(2,Private))
 checkRepSym = ("check_rep",(2,Public))
+osdecSym = ("osdec", (2, Private))
+osencSym = ("osenc", (2, Public))
 
 -- | Ternary builtin function symbols.
 verifySym, revealVerifySym :: NoEqSym
@@ -69,3 +71,7 @@ locationReportFunSig = S.fromList $ [ repSym, checkRepSym, getRepSym, reportSym]
 -- | The signature for hashing.
 hashFunSig :: NoEqFunSig
 hashFunSig = S.fromList [ hashSym ]
+
+-- | The signature for an oracle based symmetric encryption
+oracleSymEncFunSig :: NoEqFunSig
+oracleSymEncFunSig = S.fromList $ [ osdecSym, osencSym ]
