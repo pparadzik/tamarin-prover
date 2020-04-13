@@ -166,7 +166,7 @@ signatureMaudeSig       = maudeSig $ mempty {stFunSyms=signatureFunSig,stRules=s
 revealSignatureMaudeSig = maudeSig $ mempty {stFunSyms=revealSignatureFunSig,stRules=revealSignatureRules}
 hashMaudeSig            = maudeSig $ mempty {stFunSyms=hashFunSig}
 locationReportMaudeSig            = maudeSig $ mempty {stFunSyms=locationReportFunSig, stRules=locationReportRules}
-oracleSymEncMaudeSig    = maudeSig $ mempty {stFunSyms=oracleSymEncFunSig,stRules=symEncRules}
+oracleSymEncMaudeSig    = maudeSig $ mempty {stFunSyms=oracleSymEncFunSig,stRules=osymEncRules}
 
 -- | The minimal maude signature.
 minimalMaudeSig :: Bool -> MaudeSig
