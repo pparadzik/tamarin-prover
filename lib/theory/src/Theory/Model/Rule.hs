@@ -109,6 +109,7 @@ module Theory.Model.Rule (
   , getLeftRule
   , getRightRule
   , constrRuleToDestrRule
+  , constrRuleToOneDestrRule
   , destrRuleToConstrRule
   , destrRuleToDestrRule
 
@@ -517,6 +518,17 @@ constrRuleToDestrRule (Rule (IntrInfo (ConstrRule name)) ps' cs _ _) i s c
         toRule []     = error "Bug in constrRuleToDestrRule. Please report."
         toRule (p:ps) = Rule (IntrInfo (DestrRule name i s c)) ((convertKUtoKD p):ps) (map convertKUtoKD cs) [] []
 constrRuleToDestrRule _ _ _ _ = error "Not a destructor rule."
+
+-- | Converts between one constructor and one destructor rule
+constrRuleToOneDestrRule :: RuleAC -> Int -> Bool -> Bool -> RuleAC
+constrRuleToOneDestrRule (Rule (IntrInfo (ConstrRule name)) ps' cs _ _) i s c
+    -- we remove the actions and new variables as destructors do not have actions or new variables
+    = toRule ps'
+    where
+        toRule :: [LNFact] -> RuleAC
+        toRule []     = error "Bug in constrRuleToDestrRule. Please report."
+        toRule (p:ps) = Rule (IntrInfo (DestrRule name i s c)) ((convertKUtoKD p):ps) (map convertKUtoKD cs) [] []
+constrRuleToOneDestrRule _ _ _ _ = error "Not a destructor rule."
 
 -- | Converts between destructor and constructor rules.
 destrRuleToConstrRule :: FunSym -> Int -> RuleAC -> [RuleAC]
