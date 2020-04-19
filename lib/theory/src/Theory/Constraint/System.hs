@@ -196,7 +196,7 @@ module Theory.Constraint.System (
 
   ) where
 
--- import           Debug.Trace
+import           Debug.Trace
 -- import           Debug.Trace.Ignore
 
 import           Prelude                              hiding (id, (.))
@@ -635,6 +635,16 @@ getOppositeRules ctxt side (Rule rule prem _ _ _) = case rule of
         (ConstrRule x) | x == BC.pack "_xor"      -> (xorRuleInstance (length prem)):
                                                             (concat $ map (destrRuleToConstrRule (AC Xor) (length prem)) (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) (DestrRule x 0 False False)))
         (DestrRule x l s c) | x == BC.pack "_xor" -> (constrRuleToDestrRule (xorRuleInstance (length prem)) l s c)++(concat $ map destrRuleToDestrRule (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i))
+        (DestrRule x l s c) | x == BC.pack "_0_osdec" ->
+            trace ("debug " ++ show(x) ++ ":\n"
+                ++ "\tprem: " ++ show(prem) ++ ";\n"
+                ++ "\tdecSuccRule: " ++ show(decSuccRule) ++ "\n"
+                ++ "\tdecFailRule: " ++ show(decFailRule)) $
+            decSuccRule ++ decFailRule
+          where
+            decSuccRule = (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i)
+            decFailRule = map (\r -> constrRuleToOneDestrRule r l s c) constrDecRules
+            constrDecRules = (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) (ConstrRule (BC.pack "_osdec")))
         _                                         -> case intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i of
                                                             [] -> error $ "No other rule found for intruder rule " ++ show i ++ show (getAllRulesOnOtherSide ctxt side)
                                                             x  -> x

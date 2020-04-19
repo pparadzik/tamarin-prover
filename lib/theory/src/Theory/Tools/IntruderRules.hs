@@ -89,11 +89,7 @@ specialIntruderRules diff =
     , Rule IRecvRule [outFact x_var] [kdFact x_var] []                      []
     ] ++
     if diff 
-       then [ Rule IEqualityRule [kuFact x_var, kdFact x_var]  [] [] []
-            , Rule OracleDecRule
-              [kdFact (osenc(x_var, x_fresh_var)), kuFact (y_fresh_var)]
-              [kdFact (osdec(osenc(x_var, x_fresh_var), y_fresh_var))]
-              [kdFact (osdec(osenc(x_var, x_fresh_var), y_fresh_var))] [] ]
+       then [ Rule IEqualityRule [kuFact x_var, kdFact x_var]  [] [] [] ]
        else []
   where
     kuRule name prems t nvs = Rule name prems [kuFact t] [kuFact t] nvs

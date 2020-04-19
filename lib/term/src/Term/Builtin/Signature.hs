@@ -25,7 +25,7 @@ signSym = ("sign",(2, Public))
 revealSignSym = ("revealSign",(2, Public))
 repSym = ("rep",(2,Private))
 checkRepSym = ("check_rep",(2,Public))
-osdecSym = ("osdec", (2, Private))
+osdecSym = ("osdec", (2, Public))
 osencSym = ("osenc", (2, Public))
 
 -- | Ternary builtin function symbols.
