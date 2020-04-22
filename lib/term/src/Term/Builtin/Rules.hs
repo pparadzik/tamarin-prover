@@ -103,4 +103,5 @@ revealSignatureRules = S.fromList [ revealVerify (revealSign (x1,x2), x1, pk x2)
 locationReportRules = S.fromList [ check_rep (rep (x1,x2), x2) `CtxtStRule` (StRhs [[0,0]] x1),
                                    get_rep (rep (x1,x2)) `CtxtStRule` (StRhs [[0,0]] x1)
                                  ]
-osymEncRules    = S.fromList [ osdec (osenc (x1,x2), x2)     `CtxtStRule` (StRhs [[0,0]] x1) ]
+osymEncRules    = S.fromList [ osdec (osenc (x1,x2), x2)     `CtxtStRule` (StRhs [[0,0]] x1)
+                             , osenc (osdec (x1,x2), x2)     `CtxtStRule` (StRhs [[0,0]] x1) ]
