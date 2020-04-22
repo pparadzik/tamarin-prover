@@ -230,6 +230,7 @@ import           Theory.Constraint.Solver.Heuristics
 import           Theory.Model
 import           Theory.Text.Pretty
 import           Theory.Tools.EquationStore
+import           Term.Builtin.Signature
 
 ----------------------------------------------------------------------
 -- ClassifiedRules
@@ -637,7 +638,7 @@ getOppositeRules ctxt side (Rule rule prem _ _ _) = case rule of
         (DestrRule x l s c) | x == BC.pack "_xor" -> (constrRuleToDestrRule (xorRuleInstance (length prem)) l s c)++(concat $ map destrRuleToDestrRule (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i))
         (DestrRule x l s c) | x == BC.pack "_0_osdec" ->
             trace ("debug " ++ show(x) ++ ":\n"
-                ++ "\tprem: " ++ show(prem) ++ ";\n"
+                ++ "\tprem: " ++ show(prem) ++ "\n"
                 ++ "\tdecSuccRule: " ++ show(decSuccRule) ++ "\n"
                 ++ "\tdecFailRule: " ++ show(decFailRule)) $
             decSuccRule ++ decFailRule
@@ -645,6 +646,16 @@ getOppositeRules ctxt side (Rule rule prem _ _ _) = case rule of
             decSuccRule = (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i)
             decFailRule = map (\r -> constrRuleToOneDestrRule r l s c) constrDecRules
             constrDecRules = (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) (ConstrRule (BC.pack "_osdec")))
+        (ConstrRule x) | x == BC.pack "_osenc" ->
+            trace ("debug " ++ show(x) ++ ":\n"
+                ++ "\tprem: " ++ show(prem) ++ "\n"
+                ++ "\tencRule: " ++ show(encRule) ++ "\n"
+                ++ "\tencFailDecRule: " ++ show(encFailDecRule)) $
+            encRule ++ encFailDecRule
+          where
+            encRule = (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i)
+            encFailDecRule = map (\r -> destrRuleToOneConstrRule (NoEq osencSym) (length prem) r) destrEncRules
+            destrEncRules = (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) (DestrRule (BC.pack "_0_osenc") 0 True False))
         _                                         -> case intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i of
                                                             [] -> error $ "No other rule found for intruder rule " ++ show i ++ show (getAllRulesOnOtherSide ctxt side)
                                                             x  -> x
