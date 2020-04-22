@@ -44,7 +44,6 @@ import           Term.Subsumption
 import           Term.Positions
 
 import           Theory.Model
-import           Term.Builtin.Convenience
 
 -- import           Debug.Trace
 
@@ -97,7 +96,6 @@ specialIntruderRules diff =
     x_var       = varTerm (LVar "x"  LSortMsg   0)
     x_pub_var   = varTerm (LVar "x"  LSortPub   0)
     x_fresh_var = varTerm (LVar "x"  LSortFresh 0)
-    y_fresh_var = varTerm (LVar "y"  LSortFresh 0)
 
 
 ------------------------------------------------------------------------------
