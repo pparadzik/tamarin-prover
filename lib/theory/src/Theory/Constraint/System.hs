@@ -656,6 +656,14 @@ getOppositeRules ctxt side (Rule rule prem _ _ _) = case rule of
             encRule = (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i)
             encFailDecRule = map (\r -> destrRuleToOneConstrRule (NoEq osencSym) (length prem) r) destrEncRules
             destrEncRules = (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) (DestrRule (BC.pack "_0_osenc") 0 True False))
+        (DestrRule x l s c) | x == BC.pack "_exp" ->
+            trace ("debug " ++ show(x) ++ ":\n"
+                ++ "\tdestrExpRule: " ++ show(destrExpRule)) $
+            standardRules ++ [destrExpRule]
+          where
+            standardRules = intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i
+            destrExpRule  = constrRuleToOneDestrRule constrExpRule l s c
+            constrExpRule = head (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) (ConstrRule (BC.pack "_exp")))
         _                                         -> case intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i of
                                                             [] -> error $ "No other rule found for intruder rule " ++ show i ++ show (getAllRulesOnOtherSide ctxt side)
                                                             x  -> x
