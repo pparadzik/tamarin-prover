@@ -78,7 +78,6 @@ module Theory.Model.Rule (
   , isIntruderRule
   , isDestrRule
   , isIEqualityRule
-  , isOracleDecRule
   , isConstrRule
   , isPubConstrRule
   , isFreshRule
@@ -488,7 +487,6 @@ data IntrRuleACInfo =
   | PubConstrRule
   | FreshConstrRule
   | IEqualityRule -- Necessary for diff
-  | OracleDecRule -- Necessary for diff
   deriving( Ord, Eq, Show, Data, Typeable, Generic)
 instance NFData IntrRuleACInfo
 instance Binary IntrRuleACInfo
@@ -676,12 +674,6 @@ isIEqualityRule ru = case ruleName ru of
   IntrInfo IEqualityRule -> True
   _                      -> False
 
--- | True iff the rule is an oracle decryption rule.
-isOracleDecRule :: HasRuleName r => r -> Bool
-isOracleDecRule ru = case ruleName ru of
-  IntrInfo OracleDecRule -> True
-  _                      -> False
-
 -- | True iff the rule is a construction rule.
 isConstrRule :: HasRuleName r => r -> Bool
 isConstrRule ru = case ruleName ru of
@@ -770,7 +762,6 @@ getRuleName ru = case ruleName ru of
                                       PubConstrRule     -> "PubConstr"
                                       FreshConstrRule   -> "FreshConstr"
                                       IEqualityRule     -> "Equality"
-                                      OracleDecRule     -> "OracleDec"
                       ProtoInfo p -> case p of
                                       FreshRule   -> "FreshRule"
                                       StandRule s -> s
@@ -787,7 +778,6 @@ getRuleNameDiff ru = case ruleName ru of
                                       PubConstrRule     -> "PubConstr"
                                       FreshConstrRule   -> "FreshConstr"
                                       IEqualityRule     -> "Equality"
-                                      OracleDecRule     -> "OracleDec"
                       ProtoInfo p -> "Proto" ++ case p of
                                       FreshRule   -> "FreshRule"
                                       StandRule s -> s
@@ -1174,7 +1164,6 @@ prettyIntrRuleACInfo rn = text $ case rn of
     FreshConstrRule      -> "fresh"
     PubConstrRule        -> "pub"
     IEqualityRule        -> "iequality"
-    OracleDecRule        -> "oracledec"
     ConstrRule name      -> prefixIfReserved ('c' : BC.unpack name)
     DestrRule name _ _ _ -> prefixIfReserved ('d' : BC.unpack name)
 --     DestrRule name i -> prefixIfReserved ('d' : BC.unpack name ++ "_" ++ show i)
