@@ -50,6 +50,7 @@ module Theory.Constraint.System.Guarded (
   , isAllGuarded
   , isExGuarded
   , isSafetyFormula
+  , isTrivialFormula
 
   , guardFactTags
 
@@ -163,6 +164,16 @@ isSafetyFormula gf0 =
     noExistential (GGuarded All _ _ gf) = noExistential gf
     noExistential (GDisj disj)          = all noExistential $ getDisj disj
     noExistential (GConj conj)          = all noExistential $ getConj conj
+
+isTrivialFormula :: Guarded s c v -> Bool
+isTrivialFormula formula = all (==0) $ isTrivialFormula' formula
+isTrivialFormula' :: Guarded s c v -> [Int]
+isTrivialFormula' =
+    D.toList .
+    foldGuarded mempty (mconcat . getDisj) (mconcat . getConj) getTerms
+  where
+    getTerms _qua _ss atos inner =
+        mconcat [ D.singleton (factArity fact) | Action _ fact <- atos ] <> inner
 
 -- | All 'FactTag's that are used in guards.
 guardFactTags :: Guarded s c v -> [FactTag]
