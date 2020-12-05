@@ -894,14 +894,14 @@ getMirrorDGandEvaluateRestrictions dctxt dsys isSolved =
 -- Returns Just True if all hold, Just False if at least one does not hold and Nothing otherwise.
 doRestrictionsHold :: ProofContext -> System -> [LNGuarded] -> Bool -> (Trivalent, [System])
 doRestrictionsHold _    sys []       _        = (TTrue, [sys])
-doRestrictionsHold ctxt sys formulas isSolved = -- Just (True, [sys]) -- FIXME Jannik: This is a temporary simulation of diff-safe restrictions!
-  if all (==True) $ map isTrivialFormula formulas then (TTrue, [sys])
-  else if (all (\(x, _) -> x == gtrue) simplifiedForms)
+doRestrictionsHold ctxt sys formulas' isSolved = -- Just (True, [sys]) -- FIXME Jannik: This is a temporary simulation of diff-safe restrictions!
+  if (all (\(x, _) -> x == gtrue) simplifiedForms)
     then {-trace ("doRestrictionsHold: True " ++ (render. vsep $ map (prettyGuarded) formulas) ++ " - " ++ (render. vsep $ map (\(x, _) -> prettyGuarded x) simplifiedForms) ++ " - " ++ (render $ prettySystem sys))-} (TTrue, map snd simplifiedForms)
     else if (any (\(x, _) -> x == gfalse) simplifiedForms)
           then {-trace ("doRestrictionsHold: False " ++ (render. vsep $ map (prettyGuarded) formulas) ++ " - " ++ (render. vsep $ map (\(x, _) -> prettyGuarded x) simplifiedForms))-} (TFalse, map snd $ filter (\(x, _) -> x == gfalse) simplifiedForms)
           else {-trace ("doRestrictionsHold: Unkown " ++ (render. vsep $ map (prettyGuarded) formulas) ++ " - " ++ (render. vsep $ map (\(x, _) -> prettyGuarded x) simplifiedForms))-} (TUnknown, [sys])
   where
+    formulas = filter (not . isTrivialFormula) formulas'
     simplifiedForms = simplify (map (\x -> (x, sys)) formulas) isSolved
 
     simplify :: [(LNGuarded, System)] -> Bool -> [(LNGuarded, System)]
