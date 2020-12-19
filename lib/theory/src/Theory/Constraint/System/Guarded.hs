@@ -166,13 +166,13 @@ isSafetyFormula gf0 =
     noExistential (GConj conj)          = all noExistential $ getConj conj
 
 isTrivialFormula :: Guarded s c v -> Bool
-isTrivialFormula formula = all (==0) $ isTrivialFormula' formula
-isTrivialFormula' :: Guarded s c v -> [Int]
-isTrivialFormula' =
+isTrivialFormula formula = all (==0) $ getAtomsArities formula
+getAtomsArities :: Guarded s c v -> [Int]
+getAtomsArities =
     D.toList .
-    foldGuarded mempty (mconcat . getDisj) (mconcat . getConj) getTerms
+    foldGuarded mempty (mconcat . getDisj) (mconcat . getConj) getAtomArity
   where
-    getTerms _qua _ss atos inner =
+    getAtomArity _qua _ss atos inner =
         mconcat [ D.singleton (factArity fact) | Action _ fact <- atos ] <> inner
 
 -- | All 'FactTag's that are used in guards.
