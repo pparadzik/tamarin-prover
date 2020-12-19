@@ -166,9 +166,7 @@ isSafetyFormula gf0 =
     noExistential (GConj conj)          = all noExistential $ getConj conj
 
 isTrivialFormula :: Guarded s c v -> Bool
-isTrivialFormula formula = all (==0) $ getAtomsArities formula
-getAtomsArities :: Guarded s c v -> [Int]
-getAtomsArities =
+isTrivialFormula = all (==0) .
     D.toList .
     foldGuarded mempty (mconcat . getDisj) (mconcat . getConj) getAtomArity
   where
