@@ -1135,7 +1135,7 @@ prefixIfReserved n
 
 -- | List of all reserved rule names.
 reservedRuleNames :: [String]
-reservedRuleNames = ["Fresh", "irecv", "isend", "coerce", "fresh", "pub", "iequality", "oracledec"]
+reservedRuleNames = ["Fresh", "irecv", "isend", "coerce", "fresh", "pub", "iequality"]
 
 prettyProtoRuleName :: Document d => ProtoRuleName -> d
 prettyProtoRuleName rn = text $ case rn of
