@@ -72,6 +72,6 @@ locationReportFunSig = S.fromList $ [ repSym, checkRepSym, getRepSym, reportSym]
 hashFunSig :: NoEqFunSig
 hashFunSig = S.fromList [ hashSym ]
 
--- | The signature for an oracle based symmetric encryption
-oracleSymEncFunSig :: NoEqFunSig
-oracleSymEncFunSig = S.fromList $ [ osdecSym, osencSym ]
+-- | The signature for weak symmetric encryption
+weakSymEncFunSig :: NoEqFunSig
+weakSymEncFunSig = S.fromList $ [ osdecSym, osencSym ]

@@ -34,7 +34,7 @@ module Term.Maude.Signature (
   , revealSignatureMaudeSig
   , locationReportMaudeSig
   , hashMaudeSig
-  , oracleSymEncMaudeSig
+  , weakSymEncMaudeSig
   , msetMaudeSig
   , bpMaudeSig
   , xorMaudeSig
@@ -158,15 +158,15 @@ xorMaudeSig  = maudeSig $ mempty {enableXor=True}
 -- | Maude signatures for the default subterm symbols.
 --pairMaudeSig :: Bool -> MaudeSig
 --pairMaudeSig flag = maudeSig $ mempty {stFunSyms=pairFunSig,stRules=pairRules,enableDiff=flag}
-pairMaudeSig, symEncMaudeSig, asymEncMaudeSig, signatureMaudeSig, revealSignatureMaudeSig, hashMaudeSig, locationReportMaudeSig, oracleSymEncMaudeSig :: MaudeSig
+pairMaudeSig, symEncMaudeSig, asymEncMaudeSig, signatureMaudeSig, revealSignatureMaudeSig, hashMaudeSig, locationReportMaudeSig, weakSymEncMaudeSig :: MaudeSig
 pairMaudeSig            = maudeSig $ mempty {stFunSyms=pairFunSig,stRules=pairRules}
 symEncMaudeSig          = maudeSig $ mempty {stFunSyms=symEncFunSig,stRules=symEncRules}
 asymEncMaudeSig         = maudeSig $ mempty {stFunSyms=asymEncFunSig,stRules=asymEncRules}
 signatureMaudeSig       = maudeSig $ mempty {stFunSyms=signatureFunSig,stRules=signatureRules}
 revealSignatureMaudeSig = maudeSig $ mempty {stFunSyms=revealSignatureFunSig,stRules=revealSignatureRules}
 hashMaudeSig            = maudeSig $ mempty {stFunSyms=hashFunSig}
+weakSymEncMaudeSig    = maudeSig $ mempty {stFunSyms=weakSymEncFunSig,stRules=osymEncRules}
 locationReportMaudeSig            = maudeSig $ mempty {stFunSyms=locationReportFunSig, stRules=locationReportRules}
-oracleSymEncMaudeSig    = maudeSig $ mempty {stFunSyms=oracleSymEncFunSig,stRules=osymEncRules}
 
 -- | The minimal maude signature.
 minimalMaudeSig :: Bool -> MaudeSig
