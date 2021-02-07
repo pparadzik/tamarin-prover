@@ -637,20 +637,20 @@ getOppositeRules ctxt side (Rule rule prem _ _ _) = case rule of
                                                             (concat $ map (destrRuleToConstrRule (AC Xor) (length prem)) (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) (DestrRule x 0 False False)))
         (DestrRule x l s c) | x == BC.pack "_xor" -> (constrRuleToDestrRule (xorRuleInstance (length prem)) l s c)++(concat $ map destrRuleToDestrRule (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i))
         (DestrRule x l s c) | x == BC.pack "_0_osdec" ->
-            trace ("debug " ++ show(x) ++ ":\n"
+         {- trace ("debug " ++ show(x) ++ ":\n"
                 ++ "\tprem: " ++ show(prem) ++ "\n"
                 ++ "\tdecSuccRule: " ++ show(decSuccRule) ++ "\n"
-                ++ "\tdecFailRule: " ++ show(decFailRule)) $
+                ++ "\tdecFailRule: " ++ show(decFailRule)) $ -}
             decSuccRule ++ decFailRule
           where
             decSuccRule = (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i)
             decFailRule = map (\r -> constrRuleToOneDestrRule r l s c) constrDecRules
             constrDecRules = (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) (ConstrRule (BC.pack "_osdec")))
         (ConstrRule x) | x == BC.pack "_osenc" ->
-            trace ("debug " ++ show(x) ++ ":\n"
+         {- trace ("debug " ++ show(x) ++ ":\n"
                 ++ "\tprem: " ++ show(prem) ++ "\n"
                 ++ "\tencRule: " ++ show(encRule) ++ "\n"
-                ++ "\tencFailDecRule: " ++ show(encFailDecRule)) $
+                ++ "\tencFailDecRule: " ++ show(encFailDecRule)) $ -}
             encRule ++ encFailDecRule
           where
             encRule = (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i)
@@ -658,8 +658,8 @@ getOppositeRules ctxt side (Rule rule prem _ _ _) = case rule of
             destrEncRules = (intruderRuleWithName (getAllRulesOnOtherSide ctxt side) (DestrRule (BC.pack "_0_osenc") 0 True False))
         -- NOTE: this only makes sense in context for offline brute-force analysis. Try to isolate it.
         (DestrRule x l s c) | x == BC.pack "_exp" ->
-            trace ("debug " ++ show(x) ++ ":\n"
-                ++ "\tdestrExpRule: " ++ show(destrExpRules)) $
+         {- trace ("debug " ++ show(x) ++ ":\n"
+                ++ "\tdestrExpRule: " ++ show(destrExpRules)) $ -}
             standardRules ++ destrExpRules
           where
             standardRules = intruderRuleWithName (getAllRulesOnOtherSide ctxt side) i
