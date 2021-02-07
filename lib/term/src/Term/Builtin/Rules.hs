@@ -99,9 +99,9 @@ asymEncRules   = S.fromList [ adec (aenc (x1, pk x2), x2) `CtxtStRule` (StRhs [[
 signatureRules = S.fromList [ verify (sign (x1,x2), x1, pk x2) `CtxtStRule` (StRhs [[0,0]] trueC) ]
 revealSignatureRules = S.fromList [ revealVerify (revealSign (x1,x2), x1, pk x2) `CtxtStRule` (StRhs [[0,0]] trueC),
                                     extractMessage (revealSign (x1,x2)) `CtxtStRule` (StRhs [[0,0]] x1)]
+osymEncRules    = S.fromList [ wsdec (wsenc (x1,x2), x2)     `CtxtStRule` (StRhs [[0,0]] x1)
+                             , wsenc (wsdec (x1,x2), x2)     `CtxtStRule` (StRhs [[0,0]] x1) ]
 
 locationReportRules = S.fromList [ check_rep (rep (x1,x2), x2) `CtxtStRule` (StRhs [[0,0]] x1),
                                    get_rep (rep (x1,x2)) `CtxtStRule` (StRhs [[0,0]] x1)
                                  ]
-osymEncRules    = S.fromList [ osdec (osenc (x1,x2), x2)     `CtxtStRule` (StRhs [[0,0]] x1)
-                             , osenc (osdec (x1,x2), x2)     `CtxtStRule` (StRhs [[0,0]] x1) ]
