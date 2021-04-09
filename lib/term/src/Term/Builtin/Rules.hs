@@ -35,8 +35,8 @@ import Data.Set (Set)
 
 -- | The rewriting rules for Diffie-Hellman. This is a presentation due to Lankford
 --   with the finite variant property.
-dhRules :: Set (RRule LNTerm)
-dhRules = S.fromList
+dhRules' :: Set (RRule LNTerm)
+dhRules' = S.fromList
     [ expo(x1,one) `RRule` x1
     , expo(expo(x1,x2),x3) `RRule` expo(x1,(x2 *: x3))
 
@@ -55,6 +55,30 @@ dhRules = S.fromList
     expo = fAppExp
     inv  = fAppInv
     one  = fAppOne
+
+-- | The rewriting rules for Diffie-Hellman multiplication. This is a presentation due to Lankford
+--   with the finite variant property.
+dhRules :: Set (RRule LNTerm)
+dhRules = S.fromList
+    [ dh_expo (x1,dh_one) `RRule` x1
+    , dh_expo (dh_one,x1) `RRule` dh_one
+    , dh_expo (dh_inv x1, x2) `RRule` dh_inv (dh_expo (x1, x2))
+
+    , x1 *:: dh_one `RRule` x1
+    , dh_inv (dh_inv x1) `RRule` x1
+    , dh_inv dh_one `RRule` dh_one
+    , x1 *:: (dh_inv x1) `RRule` dh_one
+    , dh_inv x1 *:: dh_inv x2 `RRule` dh_inv (x1 *:: x2)
+    , dh_inv (x1 *:: x2) *:: x2 `RRule` dh_inv x1
+    , dh_inv (dh_inv x1 *:: x2) `RRule` (x1 *:: dh_inv x2)
+    , x1 *:: (dh_inv (x1) *:: x2) `RRule` x2
+    , dh_inv x1 *:: (dh_inv x2 *:: x3) `RRule` (dh_inv (x1 *:: x2) *:: x3)
+    , dh_inv (x1 *:: x2) *:: (x2 *:: x3) `RRule` (dh_inv x1 *:: x3)
+    ]
+  where
+    dh_expo = fAppExp
+    dh_inv  = fAppInv
+    dh_one  = fAppOne
 
 -- | The rewriting rules for bilinear pairing. These rules extend the
 --   the rules for Diffie-Hellman.

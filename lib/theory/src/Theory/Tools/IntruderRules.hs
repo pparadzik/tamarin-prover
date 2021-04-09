@@ -219,6 +219,7 @@ dhIntruderRules diff = reader $ \hnd -> minimizeIntruderRules diff $
     concatMap (variantsIntruder hnd id True)
       [ expRule (DestrRule (append (pack "_") expSymString) 0 True False) kdFact (const [])
       , invRule (DestrRule (append (pack "_") invSymString) 0 True False) kdFact (const [])
+      , multRule (DestrRule (append (pack "_") multSymString) 0 True False) kdFact (const [])
       ]
   where
     x_var_0 = varTerm (LVar "x" LSortMsg 0)

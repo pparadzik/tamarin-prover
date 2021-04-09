@@ -165,6 +165,7 @@ ppTheory msig = BC.unlines $
        then
        [ theoryOp "one : -> Msg"
        , theoryOp "exp : Msg Msg -> Msg"
+       -- , theoryOp "exp : Msg Msg -> Msg [assoc]"
        , theoryOp "mult : Msg Msg -> Msg [comm assoc]"
        , theoryOp "inv : Msg -> Msg" ]
        else [])
