@@ -178,6 +178,7 @@ multterm eqn plit = do
         then chainl1 (expterm eqn plit) ((\a b -> fAppAC Mult [a,b]) <$ opMult)
         else term plit eqn
 
+-- NOTE: include either multterm or dhMultterm, but not both
 -- | A left-associative sequence of DH multiplications.
 dhMultterm :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 dhMultterm eqn plit = do
