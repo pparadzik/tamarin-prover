@@ -170,6 +170,7 @@ term plit eqn = asum
 expterm :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 expterm eqn plit = chainl1 (term plit eqn) ((\a b -> fAppExp (a,b)) <$ opExp)
 
+-- NOTE: fix multterm not used, see note below
 -- | A left-associative sequence of multiplications.
 multterm :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 multterm eqn plit = do
