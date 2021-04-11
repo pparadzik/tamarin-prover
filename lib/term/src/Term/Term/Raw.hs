@@ -165,6 +165,7 @@ viewTerm2 t@(FAPP (AC o) ts)
   | otherwise     = (acSymToConstr o) ts
   where
     acSymToConstr Mult  = FMult
+    acSymToConstr DHMult = FMult
     acSymToConstr Union = FUnion
     acSymToConstr Xor   = FXor
 viewTerm2 (FAPP (C EMap) [ t1 ,t2 ]) = FEMap t1 t2
@@ -175,7 +176,9 @@ viewTerm2 t@(FAPP (NoEq o) ts) = case ts of
     [ t1, t2 ] | o == pairSym   -> FPair  t1 t2
     [ t1, t2 ] | o == diffSym   -> FDiff  t1 t2
     [ t1 ]     | o == invSym    -> FInv   t1
+    [ t1 ]     | o == dhInvSym  -> FInv   t1
     []         | o == oneSym    -> One
+    []         | o == dhOneSym  -> One
     _          | o `elem` ssyms -> error $ "viewTerm2: malformed term `"++show t++"'"
     _                           -> FAppNoEq o ts
   where

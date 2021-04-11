@@ -101,6 +101,7 @@ ppMaudeACSym :: ACSym -> ByteString
 ppMaudeACSym o =
     funSymPrefix <> case o of
                       Mult  -> "mult"
+                      DHMult  -> "dh_mult"
                       Union -> "mun"
                       Xor   -> "xor"
 
@@ -165,9 +166,17 @@ ppTheory msig = BC.unlines $
        then
        [ theoryOp "one : -> Msg"
        , theoryOp "exp : Msg Msg -> Msg"
-       -- , theoryOp "exp : Msg Msg -> Msg [assoc]"
        , theoryOp "mult : Msg Msg -> Msg [comm assoc]"
        , theoryOp "inv : Msg -> Msg" ]
+       else [])
+    ++
+    (if enableDHM msig
+       then
+       [ theoryOp "dh-one : -> Msg"
+       , theoryOp "one : -> Msg"
+       , theoryOp "exp : Msg Msg -> Msg [assoc]"
+       , theoryOp "dh_mult : Msg Msg -> Msg [comm assoc]"
+       , theoryOp "dh-inv : Msg -> Msg" ]
        else [])
     ++
     (if enableBP msig
@@ -296,6 +305,7 @@ parseTerm msig = choice
         appIdent <$> sepBy1 (parseTerm msig) (string ", ") <* string ")"
       where
         appIdent args  | ident == ppMaudeACSym Mult       = fAppAC Mult  args
+                       | ident == ppMaudeACSym DHMult     = fAppAC DHMult  args
                        | ident == ppMaudeACSym Union      = fAppAC Union args
                        | ident == ppMaudeACSym Xor        = fAppAC Xor   args
                        | ident == ppMaudeCSym  EMap       = fAppC  EMap  args

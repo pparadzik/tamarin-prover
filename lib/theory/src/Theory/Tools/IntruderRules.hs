@@ -12,6 +12,7 @@
 module Theory.Tools.IntruderRules (
     subtermIntruderRules
   , dhIntruderRules
+  , dhmIntruderRules
   , bpIntruderRules
   , xorIntruderRules
   , multisetIntruderRules
@@ -407,6 +408,67 @@ bpVariantsIntruder hnd ru = do
         mappings = substToListVFresh subst
         doms     = map fst mappings
         rngs     = map snd mappings
+
+
+------------------------------------------------------------------------------
+-- Diffie-Hellman Multiplication Intruder Rules
+------------------------------------------------------------------------------
+
+-- | @dhIntruderRules@ computes the intruder rules for DH
+dhmIntruderRules :: Bool -> WithMaude [IntrRuleAC]
+dhmIntruderRules diff = reader $ \hnd -> minimizeIntruderRules diff $
+    [ expRule  (ConstrRule (append (pack "_") expSymString))  kuFact return
+    , dhInvRule  (ConstrRule (append (pack "_") dhInvSymString))  kuFact return
+    -- The constructors for one and mult are only necessary in diff mode.
+    -- They are never applied in trace mode as all corresponding goals are solved directly,
+    -- but they  will show up in the message theory, which is reassuring for users.
+    , dhOneRule  (ConstrRule (append (pack "_") dhOneSymString))  kuFact return
+    , oneRule  (ConstrRule (append (pack "_") oneSymString))  kuFact return
+    , dhMultRule (ConstrRule (append (pack "_") dhMultSymString)) kuFact return
+    ] ++
+    concatMap (variantsIntruder hnd id True)
+      [ expRule (DestrRule (append (pack "_") expSymString) 0 True False) kdFact (const [])
+      , dhInvRule (DestrRule (append (pack "_") dhInvSymString) 0 True False) kdFact (const [])
+      , dhMultRule (DestrRule (append (pack "_") dhMultSymString) 0 True False) kdFact (const [])
+      ]
+  where
+    x_var_0 = varTerm (LVar "x" LSortMsg 0)
+    x_var_1 = varTerm (LVar "x" LSortMsg 1)
+
+    expRule mkInfo kudFact mkAction =
+        Rule mkInfo [bfact, efact] [concfact] (mkAction concfact) []
+      where
+        bfact = kudFact x_var_0
+        efact = kuFact  x_var_1
+        conc = fAppExp (x_var_0, x_var_1)
+        concfact = kudFact conc
+
+    dhMultRule mkInfo kudFact mkAction =
+        Rule mkInfo [bfact, efact] [concfact] (mkAction concfact) []
+      where
+        bfact = kudFact x_var_0
+        efact = kuFact  x_var_1
+        conc = fAppAC DHMult [x_var_0, x_var_1]
+        concfact = kudFact conc
+
+    dhInvRule mkInfo kudFact mkAction =
+        Rule mkInfo [bfact] [concfact] (mkAction concfact) []
+      where
+        bfact    = kudFact x_var_0
+        conc     = fAppDHinv x_var_0
+        concfact = kudFact conc
+
+    dhOneRule mkInfo kudFact mkAction =
+        Rule mkInfo [] [concfact] (mkAction concfact) []
+      where
+        conc     = fAppNoEq dhOneSym []
+        concfact = kudFact conc
+
+    oneRule mkInfo kudFact mkAction =
+        Rule mkInfo [] [concfact] (mkAction concfact) []
+      where
+        conc     = fAppNoEq oneSym []
+        concfact = kudFact conc
 
 ------------------------------------------------------------------------------
 -- Classification functions

@@ -27,11 +27,14 @@ module Term.Term.FunctionSymbols (
     , diffSymString
     , expSymString
     , invSymString
+    , dhInvSymString
     , pmultSymString
     , emapSymString
     , unionSymString
     , oneSymString
+    , dhOneSymString
     , multSymString
+    , dhMultSymString
     , zeroSymString
     , xorSymString
 
@@ -40,7 +43,9 @@ module Term.Term.FunctionSymbols (
     , expSym
     , pmultSym
     , oneSym
+    , dhOneSym
     , invSym
+    , dhInvSym
     , pairSym
     , fstSym
     , sndSym
@@ -48,11 +53,13 @@ module Term.Term.FunctionSymbols (
 
     -- ** concrete signatures
     , dhFunSig
+    , dhmFunSig
     , xorFunSig
     , bpFunSig
     , msetFunSig
     , pairFunSig
     , dhReducibleFunSig
+    , dhmReducibleFunSig
     , bpReducibleFunSig
     , xorReducibleFunSig
     , implicitFunSig
@@ -78,7 +85,7 @@ import qualified Data.Set as S
 ----------------------------------------------------------------------
 
 -- | AC function symbols.
-data ACSym = Union | Mult | Xor
+data ACSym = Union | Mult | Xor | DHMult
   deriving (Eq, Ord, Typeable, Data, Show, Generic, NFData, Binary)
 
 -- | A function symbol can be either Private (unknown to adversary) or Public.
@@ -109,12 +116,15 @@ type NoEqFunSig = Set NoEqSym
 -- Fixed function symbols
 ----------------------------------------------------------------------
 
-diffSymString, expSymString, invSymString, oneSymString, multSymString, xorSymString, zeroSymString :: ByteString
+diffSymString, expSymString, invSymString, dhInvSymString, oneSymString, dhOneSymString, multSymString, dhMultSymString, xorSymString, zeroSymString :: ByteString
 diffSymString = "diff"
 expSymString = "exp"
 invSymString = "inv"
+dhInvSymString = "dh_inv"
 oneSymString = "one"
+dhOneSymString = "dh_one"
 multSymString = "mult"
+dhMultSymString = "dh_mult"
 zeroSymString = "zero"
 xorSymString = "xor"
 
@@ -125,7 +135,7 @@ emapSymString, pmultSymString :: ByteString
 emapSymString  = "em"
 pmultSymString = "pmult"
 
-pairSym, diffSym, expSym, invSym, oneSym, fstSym, sndSym, pmultSym, zeroSym :: NoEqSym
+pairSym, diffSym, expSym, invSym, oneSym, fstSym, sndSym, pmultSym, zeroSym, dhInvSym, dhOneSym :: NoEqSym
 -- | Pairing.
 pairSym  = ("pair",(2,Public))
 -- | Diff.
@@ -134,8 +144,12 @@ diffSym  = (diffSymString,(2,Private))
 expSym   = (expSymString,(2,Public))
 -- | The inverse in the groups of exponents.
 invSym   = (invSymString,(1,Public))
+-- | The inverse in the DH group.
+dhInvSym   = (dhInvSymString,(1,Public))
 -- | The one in the group of exponents.
 oneSym   = (oneSymString,(0,Public))
+-- | The one in the DH group.
+dhOneSym   = (dhOneSymString,(0,Public))
 -- | Projection of first component of pair.
 fstSym   = ("fst",(1,Public))
 -- | Projection of second component of pair.
@@ -152,6 +166,10 @@ zeroSym  = (zeroSymString,(0,Public))
 -- | The signature for Diffie-Hellman function symbols.
 dhFunSig :: FunSig
 dhFunSig = S.fromList [ AC Mult, NoEq expSym, NoEq oneSym, NoEq invSym ]
+
+-- | The signature for Diffie-Hellman multiplication symbols.
+dhmFunSig :: FunSig
+dhmFunSig = S.fromList [ AC DHMult, NoEq expSym, NoEq oneSym, NoEq dhInvSym, NoEq dhOneSym ]
 
 -- | The signature for Xor function symbols.
 xorFunSig :: FunSig
@@ -172,6 +190,10 @@ pairFunSig = S.fromList [ pairSym, fstSym, sndSym ]
 -- | Reducible function symbols for DH.
 dhReducibleFunSig :: FunSig
 dhReducibleFunSig = S.fromList [ NoEq expSym, NoEq invSym ]
+
+-- | Reducible function symbols for DH multiplication.
+dhmReducibleFunSig :: FunSig
+dhmReducibleFunSig = S.fromList [ AC DHMult, NoEq expSym, NoEq dhInvSym ]
 
 -- | Reducible function symbols for BP.
 bpReducibleFunSig :: FunSig

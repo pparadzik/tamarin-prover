@@ -17,10 +17,12 @@ module Term.Term (
 
     -- ** Smart constructors
     , fAppOne
+    , fAppDHone
     , fAppZero
     , fAppDiff
     , fAppExp
     , fAppInv
+    , fAppDHinv
     , fAppPMult
     , fAppEMap
     , fAppPair
@@ -59,11 +61,14 @@ module Term.Term (
     , diffSymString
     , expSymString
     , invSymString
+    , dhInvSymString
     , pmultSymString
     , emapSymString
     , unionSymString
     , oneSymString
+    , dhOneSymString
     , multSymString
+    , dhMultSymString
     , zeroSymString
     , xorSymString
 
@@ -72,10 +77,12 @@ module Term.Term (
     , expSym
     , pmultSym
     , oneSym
+    , dhOneSym
     , zeroSym
 
     -- ** concrete signatures
     , dhFunSig
+    , dhmFunSig
     , bpFunSig
     , msetFunSig
     , xorFunSig
@@ -110,6 +117,9 @@ import           Term.Term.Raw
 fAppOne :: Term a
 fAppOne = fAppNoEq oneSym []
 
+fAppDHone :: Term a
+fAppDHone = fAppNoEq dhOneSym []
+
 fAppZero :: Term a
 fAppZero = fAppNoEq zeroSym []
 
@@ -123,8 +133,9 @@ fAppEMap :: Ord a => (Term a, Term a) -> Term a
 fAppEMap  (x,y) = fAppC    EMap     [x, y]
 
 -- | Smart constructors for inv, fst, and snd.
-fAppInv, fAppFst, fAppSnd :: Term a -> Term a
+fAppInv, fAppDHinv, fAppFst, fAppSnd :: Term a -> Term a
 fAppInv e = fAppNoEq invSym [e]
+fAppDHinv e = fAppNoEq dhInvSym [e]
 fAppFst a = fAppNoEq fstSym [a]
 fAppSnd a = fAppNoEq sndSym [a]
 
@@ -246,6 +257,7 @@ prettyTerm ppLit = ppTerm
         FApp List          ts                     -> ppFun "LIST" ts
 
     ppACOp Mult  = "*"
+    ppACOp DHMult  = "∙"
     ppACOp Union = "+"
     ppACOp Xor   = "⊕"
 

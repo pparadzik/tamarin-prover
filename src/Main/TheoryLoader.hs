@@ -37,12 +37,12 @@ module Main.TheoryLoader (
 
   -- ** Cached Message Deduction Rule Variants
   , dhIntruderVariantsFile
+  , dhmIntruderVariantsFile
   , bpIntruderVariantsFile
   , addMessageDeductionRuleVariants
 
   ) where
 
--- import           Debug.Trace
 
 import           Prelude                             hiding (id, (.))
 
@@ -424,6 +424,10 @@ dhIntruderVariantsFile :: FilePath
 dhIntruderVariantsFile = "data/intruder_variants_dh.spthy"
 
 -- | The name of the intruder variants file.
+dhmIntruderVariantsFile :: FilePath
+dhmIntruderVariantsFile = "data/intruder_variants_dhm.spthy"
+
+-- | The name of the intruder variants file.
 bpIntruderVariantsFile :: FilePath
 bpIntruderVariantsFile = "data/intruder_variants_bp.spthy"
 
@@ -433,6 +437,13 @@ mkDhIntruderVariants msig =
     either (error . show) id  -- report errors lazily through 'error'
   $ parseIntruderRules msig dhIntruderVariantsFile
                 $(embedFile "data/intruder_variants_dh.spthy")
+
+-- | Construct the DH multiplication intruder variants for the given maude signature.
+mkDhmIntruderVariants :: MaudeSig -> [IntrRuleAC]
+mkDhmIntruderVariants msig =
+    either (error . show) id  -- report errors lazily through 'error'
+  $ parseIntruderRules msig dhmIntruderVariantsFile
+                $(embedFile "data/intruder_variants_dhm.spthy")
 
 -- | Construct the BP intruder variants for the given maude signature.
 mkBpIntruderVariants :: MaudeSig -> [IntrRuleAC]
@@ -450,6 +461,7 @@ addMessageDeductionRuleVariants thy0
   | enableBP msig = addIntruderVariants [ mkDhIntruderVariants
                                         , mkBpIntruderVariants ]
   | enableDH msig = addIntruderVariants [ mkDhIntruderVariants ]
+  | enableDHM msig = addIntruderVariants [ mkDhmIntruderVariants ]
   | otherwise     = return thy
   where
     msig         = get (sigpMaudeSig . thySignature) thy0

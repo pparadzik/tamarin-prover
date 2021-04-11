@@ -14,6 +14,7 @@ module Term.Maude.Signature (
   -- * Maude signatures
     MaudeSig
   , enableDH
+  , enableDHM
   , enableBP
   , enableMSet
   , enableDiff
@@ -27,6 +28,7 @@ module Term.Maude.Signature (
 
   -- * predefined maude signatures
   , dhMaudeSig
+  , dhmMaudeSig
   , pairMaudeSig
   , asymEncMaudeSig
   , symEncMaudeSig
@@ -75,6 +77,7 @@ import qualified Text.PrettyPrint.Highlight as P
 -- | The required information to define a @Maude functional module@.
 data MaudeSig = MaudeSig
     { enableDH           :: Bool
+    , enableDHM          :: Bool
     , enableBP           :: Bool
     , enableMSet         :: Bool
     , enableXor          :: Bool
@@ -91,11 +94,12 @@ data MaudeSig = MaudeSig
 
 -- | Smart constructor for maude signatures. Computes funSyms and irreducibleFunSyms.
 maudeSig :: MaudeSig -> MaudeSig
-maudeSig msig@(MaudeSig {enableDH,enableBP,enableMSet,enableXor,enableDiff=_,stFunSyms,stRules}) =
+maudeSig msig@(MaudeSig {enableDH,enableDHM,enableBP,enableMSet,enableXor,enableDiff=_,stFunSyms,stRules}) =
     msig {enableDH=enableDH||enableBP, funSyms=allfuns, irreducibleFunSyms=irreduciblefuns}
   where
     allfuns = (S.map NoEq stFunSyms)
                 `S.union` (if enableDH || enableBP then dhFunSig   else S.empty)
+                `S.union` (if enableDHM            then dhmFunSig  else S.empty)
                 `S.union` (if enableBP             then bpFunSig   else S.empty)
                 `S.union` (if enableMSet           then msetFunSig else S.empty)
                 `S.union` (if enableXor            then xorFunSig  else S.empty)
@@ -106,9 +110,10 @@ maudeSig msig@(MaudeSig {enableDH,enableBP,enableMSet,enableXor,enableDiff=_,stF
 
 -- | A monoid instance to combine maude signatures.
 instance Semigroup MaudeSig where
-    MaudeSig dh1 bp1 mset1 xor1 diff1 stFunSyms1 stRules1 _ _ <>
-      MaudeSig dh2 bp2 mset2 xor2 diff2 stFunSyms2 stRules2 _ _ =
+    MaudeSig dh1 dhm1 bp1 mset1 xor1 diff1 stFunSyms1 stRules1 _ _ <>
+      MaudeSig dh2 dhm2 bp2 mset2 xor2 diff2 stFunSyms2 stRules2 _ _ =
           maudeSig (mempty {enableDH=dh1||dh2
+                          , enableDHM=dhm1||dhm2
                            ,enableBP=bp1||bp2
                            ,enableMSet=mset1||mset2
                            ,enableXor=xor1||xor2
@@ -117,7 +122,7 @@ instance Semigroup MaudeSig where
                            ,stRules=S.union stRules1 stRules2})
 
 instance Monoid MaudeSig where
-    mempty = MaudeSig False False False False False S.empty S.empty S.empty S.empty
+    mempty = MaudeSig False False False False False False S.empty S.empty S.empty S.empty
 
 -- | Non-AC function symbols.
 noEqFunSyms :: MaudeSig -> NoEqFunSig
@@ -136,9 +141,10 @@ addCtxtStRule str msig =
 -- | Returns all rewriting rules including the rules
 --   for DH, BP, and multiset.
 rrulesForMaudeSig :: MaudeSig -> Set (RRule LNTerm)
-rrulesForMaudeSig (MaudeSig {enableDH, enableBP, enableMSet, enableXor, stRules}) =
+rrulesForMaudeSig (MaudeSig {enableDH, enableBP, enableDHM, enableMSet, enableXor, stRules}) =
     (S.map ctxtStRuleToRRule stRules)
     `S.union` (if enableDH   then dhRules   else S.empty)
+    `S.union` (if enableDHM  then dhmRules  else S.empty)
     `S.union` (if enableBP   then bpRules   else S.empty)
     `S.union` (if enableMSet then msetRules else S.empty)
     `S.union` (if enableXor  then xorRules  else S.empty)
@@ -148,8 +154,9 @@ rrulesForMaudeSig (MaudeSig {enableDH, enableBP, enableMSet, enableXor, stRules}
 ------------------------------------------------------------------------------
 
 -- | Maude signatures for the AC symbols.
-dhMaudeSig, bpMaudeSig, msetMaudeSig, xorMaudeSig :: MaudeSig
+dhMaudeSig, bpMaudeSig, msetMaudeSig, xorMaudeSig, dhmMaudeSig :: MaudeSig
 dhMaudeSig   = maudeSig $ mempty {enableDH=True}
+dhmMaudeSig   = maudeSig $ mempty {enableDHM=True}
 bpMaudeSig   = maudeSig $ mempty {enableBP=True}
 msetMaudeSig = maudeSig $ mempty {enableMSet=True}
 xorMaudeSig  = maudeSig $ mempty {enableXor=True}
@@ -195,6 +202,7 @@ prettyMaudeSig sig = P.vcat
 
     builtIns = asum $ map (\(f, x) -> guard (f sig) *> pure x)
       [ (enableDH,   "diffie-hellman")
+      , (enableDHM,  "multip-diffie-hellman")
       , (enableBP,   "bilinear-pairing")
       , (enableMSet, "multiset")
       , (enableXor,  "xor")
