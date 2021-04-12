@@ -106,7 +106,7 @@ naryOpApp :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 naryOpApp eqn plit = do
     op <- identifier
     --traceM $ show op ++ " " ++ show eqn
-    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor"])
+    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dh_mult"])
       $ error $ "`" ++ show op ++ "` is a reserved function name for builtins."
     (k,priv) <- lookupArity op
     ts <- parens $ if k == 1
@@ -123,7 +123,7 @@ naryOpApp eqn plit = do
 binaryAlgApp :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 binaryAlgApp eqn plit = do
     op <- identifier
-    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor"])
+    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dh_mult"])
       $ error $ "`" ++ show op ++ "` is a reserved function name for builtins."
     (k,priv) <- lookupArity op
     arg1 <- braced (tupleterm eqn plit)

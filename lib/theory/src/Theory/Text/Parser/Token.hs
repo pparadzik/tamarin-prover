@@ -336,9 +336,9 @@ opExp = symbol_ "^"
 opMult :: Parser ()
 opMult = symbol_ "*"
 
--- | The DH multiplication operator @**@.
+-- | The DH multiplication operator @DHM@.
 opDHMult :: Parser ()
-opDHMult = symbol_ "*"
+opDHMult = symbol_ "DHM" <|> symbol_ "∙"
 
 -- | The addition operator @*@.
 opPlus :: Parser ()

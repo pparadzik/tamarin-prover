@@ -11,7 +11,7 @@ rule (modulo AC) c_one:
    [ ] --[ !KU( one ) ]-> [ !KU( one ) ]
 
 rule (modulo AC) c_dh_mult:
-   [ !KU( x ), !KU( x.1 ) ] --[ !KU( (x*x.1) ) ]-> [ !KU( (x*x.1) ) ]
+   [ !KU( x ), !KU( x.1 ) ] --[ !KU( (x∙x.1) ) ]-> [ !KU( (x∙x.1) ) ]
 
 rule (modulo AC) d_exp:
    [ !KD( dh_inv(x.2) ), !KU( x.1 ) ] --> [ !KD( dh_inv(x.2^x.1) ) ]
@@ -20,197 +20,197 @@ rule (modulo AC) d_dh_inv:
    [ !KD( dh_inv(x.1) ) ] --> [ !KD( x.1 ) ]
 
 rule (modulo AC) d_dh_inv:
-   [ !KD( (x.1*dh_inv(x.2)) ) ] --> [ !KD( (x.2*dh_inv(x.1)) ) ]
+   [ !KD( (x.1∙dh_inv(x.2)) ) ] --> [ !KD( (x.2∙dh_inv(x.1)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*x.3) ), !KU( (x.4*dh_inv(x.2)) ) ] --> [ !KD( (x.3*x.4) ) ]
+   [ !KD( (x.2∙x.3) ), !KU( (x.4∙dh_inv(x.2)) ) ] --> [ !KD( (x.3∙x.4) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*x.3) ), !KU( dh_inv(x.2) ) ] --> [ !KD( x.3 ) ]
+   [ !KD( (x.2∙x.3) ), !KU( dh_inv(x.2) ) ] --> [ !KD( x.3 ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( x.2 ), !KU( (x.3*dh_inv(x.2)) ) ] --> [ !KD( x.3 ) ]
+   [ !KD( x.2 ), !KU( (x.3∙dh_inv(x.2)) ) ] --> [ !KD( x.3 ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.4*dh_inv(x.2)) ), !KU( (x.2*x.3) ) ] --> [ !KD( (x.3*x.4) ) ]
+   [ !KD( (x.4∙dh_inv(x.2)) ), !KU( (x.2∙x.3) ) ] --> [ !KD( (x.3∙x.4) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.3*dh_inv(x.2)) ), !KU( x.2 ) ] --> [ !KD( x.3 ) ]
+   [ !KD( (x.3∙dh_inv(x.2)) ), !KU( x.2 ) ] --> [ !KD( x.3 ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( dh_inv(x.2) ), !KU( (x.2*x.3) ) ] --> [ !KD( x.3 ) ]
+   [ !KD( dh_inv(x.2) ), !KU( (x.2∙x.3) ) ] --> [ !KD( x.3 ) ]
 
 rule (modulo AC) d_dh_mult:
    [ !KD( dh_one ), !KU( x.1 ) ] --> [ !KD( x.1 ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*x.3) ), !KU( (x.4*dh_inv((x.2*x.5))) ) ]
+   [ !KD( (x.2∙x.3) ), !KU( (x.4∙dh_inv((x.2∙x.5))) ) ]
   -->
-   [ !KD( (x.3*x.4*dh_inv(x.5)) ) ]
+   [ !KD( (x.3∙x.4∙dh_inv(x.5)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*x.3) ), !KU( dh_inv((x.2*x.4)) ) ]
+   [ !KD( (x.2∙x.3) ), !KU( dh_inv((x.2∙x.4)) ) ]
   -->
-   [ !KD( (x.3*dh_inv(x.4)) ) ]
+   [ !KD( (x.3∙dh_inv(x.4)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( x.2 ), !KU( (x.3*dh_inv((x.2*x.4))) ) ]
+   [ !KD( x.2 ), !KU( (x.3∙dh_inv((x.2∙x.4))) ) ]
   -->
-   [ !KD( (x.3*dh_inv(x.4)) ) ]
+   [ !KD( (x.3∙dh_inv(x.4)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.4*dh_inv((x.2*x.5))) ), !KU( (x.2*x.3) ) ]
+   [ !KD( (x.4∙dh_inv((x.2∙x.5))) ), !KU( (x.2∙x.3) ) ]
   -->
-   [ !KD( (x.3*x.4*dh_inv(x.5)) ) ]
+   [ !KD( (x.3∙x.4∙dh_inv(x.5)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.3*dh_inv((x.2*x.4))) ), !KU( x.2 ) ]
+   [ !KD( (x.3∙dh_inv((x.2∙x.4))) ), !KU( x.2 ) ]
   -->
-   [ !KD( (x.3*dh_inv(x.4)) ) ]
+   [ !KD( (x.3∙dh_inv(x.4)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( dh_inv((x.2*x.4)) ), !KU( (x.2*x.3) ) ]
+   [ !KD( dh_inv((x.2∙x.4)) ), !KU( (x.2∙x.3) ) ]
   -->
-   [ !KD( (x.3*dh_inv(x.4)) ) ]
+   [ !KD( (x.3∙dh_inv(x.4)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( x.2 ), !KU( dh_inv((x.2*x.3)) ) ] --> [ !KD( dh_inv(x.3) ) ]
+   [ !KD( x.2 ), !KU( dh_inv((x.2∙x.3)) ) ] --> [ !KD( dh_inv(x.3) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( dh_inv((x.2*x.3)) ), !KU( x.2 ) ] --> [ !KD( dh_inv(x.3) ) ]
+   [ !KD( dh_inv((x.2∙x.3)) ), !KU( x.2 ) ] --> [ !KD( dh_inv(x.3) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*dh_inv(x.3)) ), !KU( (x.4*dh_inv(x.5)) ) ]
+   [ !KD( (x.2∙dh_inv(x.3)) ), !KU( (x.4∙dh_inv(x.5)) ) ]
   -->
-   [ !KD( (x.2*x.4*dh_inv((x.3*x.5))) ) ]
+   [ !KD( (x.2∙x.4∙dh_inv((x.3∙x.5))) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.3*dh_inv(x.4)) ), !KU( dh_inv(x.2) ) ]
+   [ !KD( (x.3∙dh_inv(x.4)) ), !KU( dh_inv(x.2) ) ]
   -->
-   [ !KD( (x.3*dh_inv((x.2*x.4))) ) ]
+   [ !KD( (x.3∙dh_inv((x.2∙x.4))) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( dh_inv(x.2) ), !KU( (x.3*dh_inv(x.4)) ) ]
+   [ !KD( dh_inv(x.2) ), !KU( (x.3∙dh_inv(x.4)) ) ]
   -->
-   [ !KD( (x.3*dh_inv((x.2*x.4))) ) ]
+   [ !KD( (x.3∙dh_inv((x.2∙x.4))) ) ]
 
 rule (modulo AC) d_dh_mult:
    [ !KD( dh_inv(x.2) ), !KU( dh_inv(x.3) ) ]
   -->
-   [ !KD( dh_inv((x.2*x.3)) ) ]
+   [ !KD( dh_inv((x.2∙x.3)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*x.3*dh_inv(x.4)) ), !KU( (x.4*x.5*dh_inv(x.2)) ) ]
+   [ !KD( (x.2∙x.3∙dh_inv(x.4)) ), !KU( (x.4∙x.5∙dh_inv(x.2)) ) ]
   -->
-   [ !KD( (x.3*x.5) ) ]
+   [ !KD( (x.3∙x.5) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.3*x.4*dh_inv(x.2)) ), !KU( (x.2*dh_inv(x.3)) ) ]
-  -->
-   [ !KD( x.4 ) ]
-
-rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*dh_inv(x.3)) ), !KU( (x.3*x.4*dh_inv(x.2)) ) ]
+   [ !KD( (x.3∙x.4∙dh_inv(x.2)) ), !KU( (x.2∙dh_inv(x.3)) ) ]
   -->
    [ !KD( x.4 ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.4*x.5*dh_inv((x.2*x.6))) ), !KU( (x.2*x.3*dh_inv(x.4)) ) ]
+   [ !KD( (x.2∙dh_inv(x.3)) ), !KU( (x.3∙x.4∙dh_inv(x.2)) ) ]
   -->
-   [ !KD( (x.3*x.5*dh_inv(x.6)) ) ]
+   [ !KD( x.4 ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.3*x.4*dh_inv((x.2*x.5))) ), !KU( (x.2*dh_inv(x.3)) ) ]
+   [ !KD( (x.4∙x.5∙dh_inv((x.2∙x.6))) ), !KU( (x.2∙x.3∙dh_inv(x.4)) ) ]
   -->
-   [ !KD( (x.4*dh_inv(x.5)) ) ]
+   [ !KD( (x.3∙x.5∙dh_inv(x.6)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.4*dh_inv((x.2*x.5))) ), !KU( (x.2*x.3*dh_inv(x.4)) ) ]
+   [ !KD( (x.3∙x.4∙dh_inv((x.2∙x.5))) ), !KU( (x.2∙dh_inv(x.3)) ) ]
   -->
-   [ !KD( (x.3*dh_inv(x.5)) ) ]
+   [ !KD( (x.4∙dh_inv(x.5)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.3*dh_inv((x.2*x.4))) ), !KU( (x.2*dh_inv(x.3)) ) ]
+   [ !KD( (x.4∙dh_inv((x.2∙x.5))) ), !KU( (x.2∙x.3∙dh_inv(x.4)) ) ]
   -->
-   [ !KD( dh_inv(x.4) ) ]
+   [ !KD( (x.3∙dh_inv(x.5)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*x.3*dh_inv(x.4)) ), !KU( (x.4*x.5*dh_inv((x.2*x.6))) ) ]
-  -->
-   [ !KD( (x.3*x.5*dh_inv(x.6)) ) ]
-
-rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*x.3*dh_inv(x.4)) ), !KU( (x.4*dh_inv((x.2*x.5))) ) ]
-  -->
-   [ !KD( (x.3*dh_inv(x.5)) ) ]
-
-rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*dh_inv(x.3)) ), !KU( (x.3*x.4*dh_inv((x.2*x.5))) ) ]
-  -->
-   [ !KD( (x.4*dh_inv(x.5)) ) ]
-
-rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*dh_inv(x.3)) ), !KU( (x.3*dh_inv((x.2*x.4))) ) ]
+   [ !KD( (x.3∙dh_inv((x.2∙x.4))) ), !KU( (x.2∙dh_inv(x.3)) ) ]
   -->
    [ !KD( dh_inv(x.4) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*x.3*dh_inv(x.4)) ), !KU( (x.5*dh_inv((x.2*x.6))) ) ]
+   [ !KD( (x.2∙x.3∙dh_inv(x.4)) ), !KU( (x.4∙x.5∙dh_inv((x.2∙x.6))) ) ]
   -->
-   [ !KD( (x.3*x.5*dh_inv((x.4*x.6))) ) ]
+   [ !KD( (x.3∙x.5∙dh_inv(x.6)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*dh_inv(x.3)) ), !KU( (x.4*dh_inv((x.2*x.5))) ) ]
+   [ !KD( (x.2∙x.3∙dh_inv(x.4)) ), !KU( (x.4∙dh_inv((x.2∙x.5))) ) ]
   -->
-   [ !KD( (x.4*dh_inv((x.3*x.5))) ) ]
+   [ !KD( (x.3∙dh_inv(x.5)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*x.4*dh_inv(x.5)) ), !KU( dh_inv((x.2*x.3)) ) ]
+   [ !KD( (x.2∙dh_inv(x.3)) ), !KU( (x.3∙x.4∙dh_inv((x.2∙x.5))) ) ]
   -->
-   [ !KD( (x.4*dh_inv((x.3*x.5))) ) ]
+   [ !KD( (x.4∙dh_inv(x.5)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*dh_inv(x.3)) ), !KU( dh_inv((x.2*x.4)) ) ]
+   [ !KD( (x.2∙dh_inv(x.3)) ), !KU( (x.3∙dh_inv((x.2∙x.4))) ) ]
   -->
-   [ !KD( dh_inv((x.3*x.4)) ) ]
+   [ !KD( dh_inv(x.4) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.5*dh_inv((x.2*x.6))) ), !KU( (x.2*x.3*dh_inv(x.4)) ) ]
+   [ !KD( (x.2∙x.3∙dh_inv(x.4)) ), !KU( (x.5∙dh_inv((x.2∙x.6))) ) ]
   -->
-   [ !KD( (x.3*x.5*dh_inv((x.4*x.6))) ) ]
+   [ !KD( (x.3∙x.5∙dh_inv((x.4∙x.6))) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.4*dh_inv((x.2*x.5))) ), !KU( (x.2*dh_inv(x.3)) ) ]
+   [ !KD( (x.2∙dh_inv(x.3)) ), !KU( (x.4∙dh_inv((x.2∙x.5))) ) ]
   -->
-   [ !KD( (x.4*dh_inv((x.3*x.5))) ) ]
+   [ !KD( (x.4∙dh_inv((x.3∙x.5))) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( dh_inv((x.2*x.3)) ), !KU( (x.2*x.4*dh_inv(x.5)) ) ]
+   [ !KD( (x.2∙x.4∙dh_inv(x.5)) ), !KU( dh_inv((x.2∙x.3)) ) ]
   -->
-   [ !KD( (x.4*dh_inv((x.3*x.5))) ) ]
+   [ !KD( (x.4∙dh_inv((x.3∙x.5))) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( dh_inv((x.2*x.3)) ), !KU( (x.2*dh_inv(x.4)) ) ]
+   [ !KD( (x.2∙dh_inv(x.3)) ), !KU( dh_inv((x.2∙x.4)) ) ]
   -->
-   [ !KD( dh_inv((x.3*x.4)) ) ]
+   [ !KD( dh_inv((x.3∙x.4)) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*x.3*dh_inv((x.4*x.5))) ), !KU( (x.4*x.6*dh_inv((x.2*x.7))) )
+   [ !KD( (x.5∙dh_inv((x.2∙x.6))) ), !KU( (x.2∙x.3∙dh_inv(x.4)) ) ]
+  -->
+   [ !KD( (x.3∙x.5∙dh_inv((x.4∙x.6))) ) ]
+
+rule (modulo AC) d_dh_mult:
+   [ !KD( (x.4∙dh_inv((x.2∙x.5))) ), !KU( (x.2∙dh_inv(x.3)) ) ]
+  -->
+   [ !KD( (x.4∙dh_inv((x.3∙x.5))) ) ]
+
+rule (modulo AC) d_dh_mult:
+   [ !KD( dh_inv((x.2∙x.3)) ), !KU( (x.2∙x.4∙dh_inv(x.5)) ) ]
+  -->
+   [ !KD( (x.4∙dh_inv((x.3∙x.5))) ) ]
+
+rule (modulo AC) d_dh_mult:
+   [ !KD( dh_inv((x.2∙x.3)) ), !KU( (x.2∙dh_inv(x.4)) ) ]
+  -->
+   [ !KD( dh_inv((x.3∙x.4)) ) ]
+
+rule (modulo AC) d_dh_mult:
+   [ !KD( (x.2∙x.3∙dh_inv((x.4∙x.5))) ), !KU( (x.4∙x.6∙dh_inv((x.2∙x.7))) )
    ]
   -->
-   [ !KD( (x.3*x.6*dh_inv((x.5*x.7))) ) ]
+   [ !KD( (x.3∙x.6∙dh_inv((x.5∙x.7))) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.3*x.5*dh_inv((x.2*x.6))) ), !KU( (x.2*dh_inv((x.3*x.4))) ) ]
+   [ !KD( (x.3∙x.5∙dh_inv((x.2∙x.6))) ), !KU( (x.2∙dh_inv((x.3∙x.4))) ) ]
   -->
-   [ !KD( (x.5*dh_inv((x.4*x.6))) ) ]
+   [ !KD( (x.5∙dh_inv((x.4∙x.6))) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*dh_inv((x.3*x.4))) ), !KU( (x.3*x.5*dh_inv((x.2*x.6))) ) ]
+   [ !KD( (x.2∙dh_inv((x.3∙x.4))) ), !KU( (x.3∙x.5∙dh_inv((x.2∙x.6))) ) ]
   -->
-   [ !KD( (x.5*dh_inv((x.4*x.6))) ) ]
+   [ !KD( (x.5∙dh_inv((x.4∙x.6))) ) ]
 
 rule (modulo AC) d_dh_mult:
-   [ !KD( (x.2*dh_inv((x.3*x.4))) ), !KU( (x.3*dh_inv((x.2*x.5))) ) ]
+   [ !KD( (x.2∙dh_inv((x.3∙x.4))) ), !KU( (x.3∙dh_inv((x.2∙x.5))) ) ]
   -->
-   [ !KD( dh_inv((x.4*x.5)) ) ]
+   [ !KD( dh_inv((x.4∙x.5)) ) ]
