@@ -144,7 +144,7 @@ unsafefApp :: FunSym -> [Term a] -> Term a
 unsafefApp fsym as = FAPP fsym as
 
 -- | View on terms that distinguishes function application of builtin symbols like exp.
-data TermView2 a = FExp (Term a) (Term a)   | FInv (Term a) | FMult [Term a] | One
+data TermView2 a = FExp (Term a) (Term a)   | FInv (Term a) | FMult [Term a] | One | FDHMult [Term a] | FDHInv (Term a) | DHOne
                  | FPMult (Term a) (Term a) | FEMap (Term a) (Term a)
                  | FXor [Term a] | Zero
                  | FUnion [Term a]
@@ -165,7 +165,7 @@ viewTerm2 t@(FAPP (AC o) ts)
   | otherwise     = (acSymToConstr o) ts
   where
     acSymToConstr Mult  = FMult
-    acSymToConstr DHMult = FMult
+    acSymToConstr DHMult = FDHMult
     acSymToConstr Union = FUnion
     acSymToConstr Xor   = FXor
 viewTerm2 (FAPP (C EMap) [ t1 ,t2 ]) = FEMap t1 t2
@@ -176,7 +176,7 @@ viewTerm2 t@(FAPP (NoEq o) ts) = case ts of
     [ t1, t2 ] | o == pairSym   -> FPair  t1 t2
     [ t1, t2 ] | o == diffSym   -> FDiff  t1 t2
     [ t1 ]     | o == invSym    -> FInv   t1
-    [ t1 ]     | o == dhInvSym  -> FInv   t1
+    [ t1 ]     | o == dhInvSym  -> FDHInv   t1
     []         | o == oneSym    -> One
     []         | o == dhOneSym  -> One
     _          | o `elem` ssyms -> error $ "viewTerm2: malformed term `"++show t++"'"

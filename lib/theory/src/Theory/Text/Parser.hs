@@ -195,6 +195,8 @@ xorterm eqn plit = do
     if xor && not eqn-- if xor is not enabled, do not accept 'xorterms's
         then chainl1 (dhMultterm eqn plit) ((\a b -> fAppAC Xor [a,b]) <$ opXor)
         else dhMultterm eqn plit
+        -- then chainl1 (multterm eqn plit) ((\a b -> fAppAC Xor [a,b]) <$ opXor)
+        -- else multterm eqn plit
 
 -- | A left-associative sequence of multiset unions.
 msetterm :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)

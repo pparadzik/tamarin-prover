@@ -33,6 +33,7 @@ import           Term.Substitution
 import           Term.SubtermRule
 import           Term.Unification
 
+import Debug.Trace
 ----------------------------------------------------------------------
 -- Normalization using Maude
 ----------------------------------------------------------------------
@@ -58,13 +59,15 @@ nfViaHaskell t0 = reader $ \hnd -> check hnd
   where
     check hnd = go t0
       where
-        go t = case viewTerm2 t of
+        -- go t = case viewTerm2 t of
+        go t = case
             -- irreducible function symbols
             FAppNoEq o ts | (NoEq o) `S.member` irreducible -> all go ts
             FList ts                                        -> all go ts
             FPair t1 t2                                     -> go t1 && go t2
             FDiff t1 t2                                     -> go t1 && go t2
             One                                             -> True
+            DHOne                                           -> True
             Zero                                            -> True
             Lit2 _                                          -> True
             -- subterm rules
@@ -76,8 +79,14 @@ nfViaHaskell t0 = reader $ \hnd -> check hnd
             FInv (viewTerm2 -> FInv _)                      -> False
             FInv (viewTerm2 -> FMult ts) | any isInverse ts -> False
             FInv (viewTerm2 -> One)                         -> False
+            -- DH inverses
+            FDHInv (viewTerm2 -> FDHInv _)                      -> False
+            FDHInv (viewTerm2 -> FDHMult ts) | any isInverse ts -> False
+            FDHInv (viewTerm2 -> DHOne)                         -> False
             -- multiplication
             FMult ts | fAppOne `elem` ts  || any isProduct ts || invalidMult ts   -> False
+            -- DH multiplication
+            FDHMult ts | fAppDHone `elem` ts  || any isProduct ts || invalidDHMult ts   -> False
             -- xor
             FXor ts | fAppZero `elem` ts  || any isXor ts || invalidXor ts   -> False
             -- point multiplication
@@ -92,7 +101,9 @@ nfViaHaskell t0 = reader $ \hnd -> check hnd
             FPMult     t1 t2 -> go t1 && go t2
             FEMap      t1 t2 -> go t1 && go t2
             FInv       t1    -> go t1
+            FDHInv     t1    -> go t1
             FMult      ts    -> all go ts
+            FDHMult    ts    -> all go ts
             FXor       ts    -> all go ts
             FUnion     ts    -> all go ts
             FAppNoEq _ ts    -> all go ts
@@ -111,6 +122,14 @@ nfViaHaskell t0 = reader $ \hnd -> check hnd
             ([ viewTerm2 -> FInv (viewTerm2 -> FMult ifactors) ], factors) ->
                 (ifactors \\ factors /= ifactors) || (factors \\ ifactors /= factors)
             ([ viewTerm2 -> FInv t ], factors) -> t `elem` factors
+            (_:_:_, _) -> True
+            _          -> False
+
+        invalidDHMult ts = case partition isInverse ts of
+            ([],_)     -> False
+            ([ viewTerm2 -> FDHInv (viewTerm2 -> FDHMult ifactors) ], factors) ->
+                (ifactors \\ factors /= ifactors) || (factors \\ ifactors /= factors)
+            ([ viewTerm2 -> FDHInv t ], factors) -> t `elem` factors
             (_:_:_, _) -> True
             _          -> False
 

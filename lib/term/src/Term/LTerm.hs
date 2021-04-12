@@ -322,7 +322,9 @@ getMsgVar _                                                    = Nothing
 niFactors :: LNTerm -> [LNTerm]
 niFactors t = case viewTerm2 t of
                 FMult ts -> concatMap niFactors ts
+                FDHMult ts -> concatMap niFactors ts
                 FInv t1  -> niFactors t1
+                FDHInv t1  -> niFactors t1
                 _        -> [t]
 
 -- | @containsPrivate t@ returns @True@ if @t@ contains private function symbols.

@@ -160,11 +160,13 @@ isDiff _                        = False
 -- | 'True' iff the term is a well-formed inverse.
 isInverse :: Show a => Term a -> Bool
 isInverse (viewTerm2 -> FInv _) = True
+isInverse (viewTerm2 -> FDHInv _) = True
 isInverse _                     = False
 
 -- | 'True' iff the term is a well-formed product.
 isProduct :: Show a => Term a -> Bool
 isProduct (viewTerm2 -> FMult _) = True
+isProduct (viewTerm2 -> FDHMult _) = True
 isProduct _                      = False
 
 -- | 'True' iff the term is a well-formed xor.
