@@ -61,9 +61,10 @@ dhRules = S.fromList
 --   with the finite variant property.
 dhmRules :: Set (RRule LNTerm)
 dhmRules = S.fromList
-    [ expo (x1,one) `RRule` x1
-    , expo (dh_one,x1) `RRule` dh_one
-    , expo (dh_inv x1, x2) `RRule` dh_inv (expo (x1, x2))
+    [ expo(x1, one) `RRule` x1
+    , expo(expo(x1, x2), x3) `RRule` expo(x1, (x2 *: x3))
+    , expo(dh_one, x1) `RRule` dh_one
+    , expo(dh_inv x1, x2) `RRule` dh_inv (expo(x1, x2))
 
     , x1 **: dh_one `RRule` x1
     , dh_inv (dh_inv x1) `RRule` x1

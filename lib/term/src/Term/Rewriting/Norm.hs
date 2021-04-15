@@ -59,8 +59,7 @@ nfViaHaskell t0 = reader $ \hnd -> check hnd
   where
     check hnd = go t0
       where
-        -- go t = case viewTerm2 t of
-        go t = case
+        go t = case viewTerm2 t of
             -- irreducible function symbols
             FAppNoEq o ts | (NoEq o) `S.member` irreducible -> all go ts
             FList ts                                        -> all go ts
