@@ -106,7 +106,7 @@ naryOpApp :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 naryOpApp eqn plit = do
     op <- identifier
     --traceM $ show op ++ " " ++ show eqn
-    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dhmult", "dhone", "dhinv"])
+    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dhmult", "dhemult", "dhone", "dhinv"])
       $ error $ "`" ++ show op ++ "` is a reserved function name for builtins."
     (k,priv) <- lookupArity op
     ts <- parens $ if k == 1
@@ -123,7 +123,7 @@ naryOpApp eqn plit = do
 binaryAlgApp :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 binaryAlgApp eqn plit = do
     op <- identifier
-    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dhmult", "dhone", "dhinv"])
+    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dhmult", "dhemult", "dhone", "dhinv"])
       $ error $ "`" ++ show op ++ "` is a reserved function name for builtins."
     (k,priv) <- lookupArity op
     arg1 <- braced (tupleterm eqn plit)
@@ -177,7 +177,7 @@ multterm eqn plit = do
     dhm <- enableDHM <$> getState
     case (dh, dhm, not eqn) of
       (True, _, True) -> chainl1 (expterm eqn plit) ((\a b -> fAppAC Mult [a,b]) <$ opMult)
-      (_, True, True) -> chainl1 (expterm eqn plit) ((\a b -> fAppAC DHMult [a,b]) <$ opDHMult)
+      (_, True, True) -> chainl1 ( chainl1 (expterm eqn plit) ((\a b -> fAppAC DHMult [a,b]) <$ opDHMult) ) ((\a b -> fAppC DHEMult [a,b]) <$ opDHEMult)
       (_, _, _) -> term plit eqn
 
 -- | A left-associative sequence of xors.
@@ -187,8 +187,6 @@ xorterm eqn plit = do
     if xor && not eqn-- if xor is not enabled, do not accept 'xorterms's
         then chainl1 (multterm eqn plit) ((\a b -> fAppAC Xor [a,b]) <$ opXor)
         else multterm eqn plit
-        -- then chainl1 (multterm eqn plit) ((\a b -> fAppAC Xor [a,b]) <$ opXor)
-        -- else multterm eqn plit
 
 -- | A left-associative sequence of multiset unions.
 msetterm :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
@@ -839,7 +837,7 @@ functions =
         f   <- BC.pack <$> identifier <* opSlash
         k   <- fromIntegral <$> natural
         priv <- option Public (symbol "[private]" *> pure Private)
-        if (BC.unpack f `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dhmult", "dhinv", "dhone"])
+        if (BC.unpack f `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dhmult", "dhemult", "dhinv", "dhone"])
           then fail $ "`" ++ BC.unpack f ++ "` is a reserved function name for builtins."
           else return ()
         sig <- getState

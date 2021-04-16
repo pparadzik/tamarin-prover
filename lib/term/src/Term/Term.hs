@@ -168,6 +168,7 @@ isInverse _                     = False
 isProduct :: Show a => Term a -> Bool
 isProduct (viewTerm2 -> FMult _) = True
 isProduct (viewTerm2 -> FDHMult _) = True
+isProduct (viewTerm2 -> FDHEMult _) = True
 isProduct _                      = False
 
 -- | 'True' iff the term is a well-formed xor.

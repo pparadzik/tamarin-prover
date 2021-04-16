@@ -323,6 +323,7 @@ niFactors :: LNTerm -> [LNTerm]
 niFactors t = case viewTerm2 t of
                 FMult ts -> concatMap niFactors ts
                 FDHMult ts -> concatMap niFactors ts
+                FDHEMult ts -> concatMap niFactors ts
                 FInv t1  -> niFactors t1
                 FDHInv t1  -> niFactors t1
                 _        -> [t]

@@ -85,6 +85,7 @@ nfViaHaskell t0 = reader $ \hnd -> check hnd
             FMult ts | fAppOne `elem` ts  || any isProduct ts || invalidMult ts   -> False
             -- DH multiplication
             FDHMult ts | fAppDHone `elem` ts  || any isProduct ts || invalidDHMult ts   -> False
+            FDHEMult ts | fAppOne `elem` ts  || any isProduct ts  -> False
             -- xor
             FXor ts | fAppZero `elem` ts  || any isXor ts || invalidXor ts   -> False
             -- point multiplication
@@ -102,6 +103,7 @@ nfViaHaskell t0 = reader $ \hnd -> check hnd
             FDHInv     t1    -> go t1
             FMult      ts    -> all go ts
             FDHMult    ts    -> all go ts
+            FDHEMult   ts    -> all go ts
             FXor       ts    -> all go ts
             FUnion     ts    -> all go ts
             FAppNoEq _ ts    -> all go ts

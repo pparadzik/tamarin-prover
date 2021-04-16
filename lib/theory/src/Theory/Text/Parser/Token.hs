@@ -44,6 +44,7 @@ module Theory.Text.Parser.Token (
   , opExp
   , opMult
   , opDHMult
+  , opDHEMult
 
   , opXor
 
@@ -339,6 +340,10 @@ opMult = symbol_ "*"
 -- | The DH multiplication operator @DHM@.
 opDHMult :: Parser ()
 opDHMult = symbol_ "DHM" <|> symbol_ "∙"
+
+-- | The DH exponent multiplication operator @*@.
+opDHEMult :: Parser ()
+opDHEMult = symbol_ "*"
 
 -- | The addition operator @*@.
 opPlus :: Parser ()
