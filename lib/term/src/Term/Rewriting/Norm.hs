@@ -33,7 +33,6 @@ import           Term.Substitution
 import           Term.SubtermRule
 import           Term.Unification
 
-import Debug.Trace
 ----------------------------------------------------------------------
 -- Normalization using Maude
 ----------------------------------------------------------------------

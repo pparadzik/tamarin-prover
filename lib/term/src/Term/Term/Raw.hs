@@ -213,6 +213,7 @@ instance Show a => Show (Term a) where
         FApp   (NoEq (s,_)) [] -> BC.unpack s
         FApp   (NoEq (s,_)) as -> BC.unpack s++"("++(intercalate "," (map show as))++")"
         FApp   (C EMap) as     -> BC.unpack emapSymString++"("++(intercalate "," (map show as))++")"
+        FApp   (C DHEMult) as  -> BC.unpack dhEMultSymString++"("++(intercalate "," (map show as))++")"
         FApp   List as         -> "LIST"++"("++(intercalate "," (map show as))++")"
         FApp   (AC o) as       -> show o++"("++(intercalate "," (map show as))++")"
 

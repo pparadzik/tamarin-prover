@@ -63,24 +63,24 @@ dhmRules :: Set (RRule LNTerm)
 dhmRules = S.fromList
     [ expo(x1, one) `RRule` x1
     , expo(expo(x1, x2), x3) `RRule` expo(x1, (x2 *: x3))
-    , expo(dh_one, x1) `RRule` dh_one
-    , expo(dh_inv x1, x2) `RRule` dh_inv (expo(x1, x2))
+    , expo(dhone, x1) `RRule` dhone
+    , expo(dhinv x1, x2) `RRule` dhinv (expo(x1, x2))
 
-    , x1 **: dh_one `RRule` x1
-    , dh_inv (dh_inv x1) `RRule` x1
-    , dh_inv dh_one `RRule` dh_one
-    , x1 **: (dh_inv x1) `RRule` dh_one
-    , dh_inv x1 **: dh_inv x2 `RRule` dh_inv (x1 **: x2)
-    , dh_inv (x1 **: x2) **: x2 `RRule` dh_inv x1
-    , dh_inv (dh_inv x1 **: x2) `RRule` (x1 **: dh_inv x2)
-    , x1 **: (dh_inv (x1) **: x2) `RRule` x2
-    , dh_inv x1 **: (dh_inv x2 **: x3) `RRule` (dh_inv (x1 **: x2) **: x3)
-    , dh_inv (x1 **: x2) **: (x2 **: x3) `RRule` (dh_inv x1 **: x3)
+    , x1 **: dhone `RRule` x1
+    , dhinv (dhinv x1) `RRule` x1
+    , dhinv dhone `RRule` dhone
+    , x1 **: (dhinv x1) `RRule` dhone
+    , dhinv x1 **: dhinv x2 `RRule` dhinv (x1 **: x2)
+    , dhinv (x1 **: x2) **: x2 `RRule` dhinv x1
+    , dhinv (dhinv x1 **: x2) `RRule` (x1 **: dhinv x2)
+    , x1 **: (dhinv (x1) **: x2) `RRule` x2
+    , dhinv x1 **: (dhinv x2 **: x3) `RRule` (dhinv (x1 **: x2) **: x3)
+    , dhinv (x1 **: x2) **: (x2 **: x3) `RRule` (dhinv x1 **: x3)
     ]
   where
     expo = fAppExp
-    dh_inv = fAppDHinv
-    dh_one = fAppDHone
+    dhinv = fAppDHinv
+    dhone = fAppDHone
     one = fAppOne
 
 -- | The rewriting rules for bilinear pairing. These rules extend the

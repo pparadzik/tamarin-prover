@@ -35,6 +35,7 @@ module Term.Term.FunctionSymbols (
     , dhOneSymString
     , multSymString
     , dhMultSymString
+    , dhEMultSymString
     , zeroSymString
     , xorSymString
 
@@ -96,7 +97,7 @@ data Privacy = Private | Public
 type NoEqSym = (ByteString, (Int, Privacy)) -- ^ operator name, arity, private
 
 -- | C(ommutative) function symbols
-data CSym = EMap
+data CSym = EMap | DHEMult
   deriving (Eq, Ord, Typeable, Data, Show, Generic, NFData, Binary)
 
 -- | Function symbols
@@ -116,15 +117,16 @@ type NoEqFunSig = Set NoEqSym
 -- Fixed function symbols
 ----------------------------------------------------------------------
 
-diffSymString, expSymString, invSymString, dhInvSymString, oneSymString, dhOneSymString, multSymString, dhMultSymString, xorSymString, zeroSymString :: ByteString
+diffSymString, expSymString, invSymString, dhInvSymString, oneSymString, dhOneSymString, multSymString, dhMultSymString, dhEMultSymString, xorSymString, zeroSymString :: ByteString
 diffSymString = "diff"
 expSymString = "exp"
 invSymString = "inv"
-dhInvSymString = "dh_inv"
+dhInvSymString = "dhinv"
 oneSymString = "one"
-dhOneSymString = "dh_one"
+dhOneSymString = "dhone"
 multSymString = "mult"
-dhMultSymString = "dh_mult"
+dhMultSymString = "dhmult"
+dhEMultSymString = "dhemult"
 zeroSymString = "zero"
 xorSymString = "xor"
 
@@ -169,7 +171,7 @@ dhFunSig = S.fromList [ AC Mult, NoEq expSym, NoEq oneSym, NoEq invSym ]
 
 -- | The signature for Diffie-Hellman multiplication symbols.
 dhmFunSig :: FunSig
-dhmFunSig = S.fromList [ AC DHMult, NoEq expSym, NoEq oneSym, NoEq dhInvSym, NoEq dhOneSym ]
+dhmFunSig = S.fromList [ AC DHMult, C DHEMult, NoEq expSym, NoEq oneSym, NoEq dhInvSym, NoEq dhOneSym ]
 
 -- | The signature for Xor function symbols.
 xorFunSig :: FunSig
@@ -193,7 +195,7 @@ dhReducibleFunSig = S.fromList [ NoEq expSym, NoEq invSym ]
 
 -- | Reducible function symbols for DH multiplication.
 dhmReducibleFunSig :: FunSig
-dhmReducibleFunSig = S.fromList [ AC DHMult, NoEq expSym, NoEq dhInvSym ]
+dhmReducibleFunSig = S.fromList [ AC DHMult, C DHEMult, NoEq expSym, NoEq dhInvSym ]
 
 -- | Reducible function symbols for BP.
 bpReducibleFunSig :: FunSig
@@ -206,4 +208,4 @@ xorReducibleFunSig = S.fromList [ AC Xor ]
 -- | Implicit function symbols.
 implicitFunSig :: FunSig
 implicitFunSig = S.fromList [ NoEq invSym, NoEq pairSym
-                            , AC Mult, AC Union ]
+                            , AC Mult, AC Union, C DHEMult ]

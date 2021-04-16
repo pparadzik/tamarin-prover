@@ -69,6 +69,7 @@ module Term.Term (
     , dhOneSymString
     , multSymString
     , dhMultSymString
+    , dhEMultSymString
     , zeroSymString
     , xorSymString
 
@@ -256,6 +257,7 @@ prettyTerm ppLit = ppTerm
         FApp (NoEq (f, _)) []                     -> text (BC.unpack f)
         FApp (NoEq (f, _)) ts                     -> ppFun f ts
         FApp (C EMap)      ts                     -> ppFun emapSymString ts
+        FApp (C DHEMult)   ts                     -> ppFun dhEMultSymString ts
         FApp List          ts                     -> ppFun "LIST" ts
 
     ppACOp Mult  = "*"

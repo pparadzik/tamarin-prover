@@ -100,10 +100,10 @@ replaceMinusFun (s, p) = (replaceMinus s, p)
 ppMaudeACSym :: ACSym -> ByteString
 ppMaudeACSym o =
     funSymPrefix <> case o of
-                      Mult  -> "mult"
-                      DHMult  -> "dh_mult"
-                      Union -> "mun"
-                      Xor   -> "xor"
+                      Mult   -> "mult"
+                      DHMult -> "dhmult"
+                      Union  -> "mun"
+                      Xor    -> "xor"
 
 -- | Pretty print a non-AC symbol for Maude.
 ppMaudeNoEqSym :: NoEqSym -> ByteString
@@ -113,6 +113,7 @@ ppMaudeNoEqSym (o,(_,Public))  = funSymPrefix     <> replaceUnderscore o
 -- | Pretty print a C symbol for Maude.
 ppMaudeCSym :: CSym -> ByteString
 ppMaudeCSym EMap = funSymPrefix <> emapSymString
+ppMaudeCSym DHEMult = funSymPrefix <> dhEMultSymString
 
 
 -- | @ppMaude t@ pretty prints the term @t@ for Maude.
@@ -172,12 +173,12 @@ ppTheory msig = BC.unlines $
     ++
     (if enableDHM msig
        then
-       [ theoryOp "dh-one : -> Msg"
+       [ theoryOp "dhone : -> Msg"
        , theoryOp "one : -> Msg"
        , theoryOp "exp : Msg Msg -> Msg"
-       , theoryOp "mult : Msg Msg -> Msg [comm]"
-       , theoryOp "dh_mult : Msg Msg -> Msg [comm assoc]"
-       , theoryOp "dh-inv : Msg -> Msg" ]
+       , theoryOp "dhemult : Msg Msg -> Msg [comm]"
+       , theoryOp "dhmult : Msg Msg -> Msg [comm assoc]"
+       , theoryOp "dhinv : Msg -> Msg" ]
        else [])
     ++
     (if enableBP msig
@@ -307,6 +308,7 @@ parseTerm msig = choice
       where
         appIdent args  | ident == ppMaudeACSym Mult       = fAppAC Mult  args
                        | ident == ppMaudeACSym DHMult     = fAppAC DHMult  args
+                       | ident == ppMaudeCSym  DHEMult    = fAppC  DHEMult  args
                        | ident == ppMaudeACSym Union      = fAppAC Union args
                        | ident == ppMaudeACSym Xor        = fAppAC Xor   args
                        | ident == ppMaudeCSym  EMap       = fAppC  EMap  args

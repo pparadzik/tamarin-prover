@@ -106,7 +106,7 @@ naryOpApp :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 naryOpApp eqn plit = do
     op <- identifier
     --traceM $ show op ++ " " ++ show eqn
-    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dh_mult"])
+    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dhmult", "dhone", "dhinv"])
       $ error $ "`" ++ show op ++ "` is a reserved function name for builtins."
     (k,priv) <- lookupArity op
     ts <- parens $ if k == 1
@@ -123,7 +123,7 @@ naryOpApp eqn plit = do
 binaryAlgApp :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 binaryAlgApp eqn plit = do
     op <- identifier
-    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dh_mult"])
+    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dhmult", "dhone", "dhinv"])
       $ error $ "`" ++ show op ++ "` is a reserved function name for builtins."
     (k,priv) <- lookupArity op
     arg1 <- braced (tupleterm eqn plit)
@@ -170,31 +170,23 @@ term plit eqn = asum
 expterm :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 expterm eqn plit = chainl1 (term plit eqn) ((\a b -> fAppExp (a,b)) <$ opExp)
 
--- NOTE: fix multterm not used, see note below
 -- | A left-associative sequence of multiplications.
 multterm :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 multterm eqn plit = do
     dh <- enableDH <$> getState
-    if dh && not eqn -- if DH is not enabled, do not accept 'multterm's and 'expterm's
-        then chainl1 (expterm eqn plit) ((\a b -> fAppAC Mult [a,b]) <$ opMult)
-        else term plit eqn
-
--- NOTE: include either multterm or dhMultterm, but not both
--- | A left-associative sequence of DH multiplications.
-dhMultterm :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
-dhMultterm eqn plit = do
     dhm <- enableDHM <$> getState
-    if dhm && not eqn -- if DHM is not enabled, do not accept 'multterm's and 'expterm's
-        then chainl1 (expterm eqn plit) ((\a b -> fAppAC DHMult [a,b]) <$ opDHMult)
-        else term plit eqn
+    case (dh, dhm, not eqn) of
+      (True, _, True) -> chainl1 (expterm eqn plit) ((\a b -> fAppAC Mult [a,b]) <$ opMult)
+      (_, True, True) -> chainl1 (expterm eqn plit) ((\a b -> fAppAC DHMult [a,b]) <$ opDHMult)
+      (_, _, _) -> term plit eqn
 
 -- | A left-associative sequence of xors.
 xorterm :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 xorterm eqn plit = do
     xor <- enableXor <$> getState
     if xor && not eqn-- if xor is not enabled, do not accept 'xorterms's
-        then chainl1 (dhMultterm eqn plit) ((\a b -> fAppAC Xor [a,b]) <$ opXor)
-        else dhMultterm eqn plit
+        then chainl1 (multterm eqn plit) ((\a b -> fAppAC Xor [a,b]) <$ opXor)
+        else multterm eqn plit
         -- then chainl1 (multterm eqn plit) ((\a b -> fAppAC Xor [a,b]) <$ opXor)
         -- else multterm eqn plit
 
@@ -847,7 +839,7 @@ functions =
         f   <- BC.pack <$> identifier <* opSlash
         k   <- fromIntegral <$> natural
         priv <- option Public (symbol "[private]" *> pure Private)
-        if (BC.unpack f `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dh_one", "dh_mult"])
+        if (BC.unpack f `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dhmult", "dhinv", "dhone"])
           then fail $ "`" ++ BC.unpack f ++ "` is a reserved function name for builtins."
           else return ()
         sig <- getState

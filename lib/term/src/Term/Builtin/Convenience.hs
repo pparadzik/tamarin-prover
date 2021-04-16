@@ -19,6 +19,8 @@ import Term.Builtin.Signature
 b *: e = fAppAC Mult [b,e]
 (**:) :: Ord a => Term a -> Term a -> Term a
 b **: e = fAppAC DHMult [b,e]
+(***:) :: Ord a => Term a -> Term a -> Term a
+b ***: e = fAppC DHEMult [b,e]
 (#) :: Ord a => Term a -> Term a -> Term a
 b # e  = fAppAC Union [b,e]
 (+:) :: Ord a => Term a -> Term a -> Term a
