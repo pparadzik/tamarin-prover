@@ -251,13 +251,13 @@ prettyTerm ppLit = ppTerm
     ppTerm t = case viewTerm t of
         Lit l                                     -> ppLit l
         FApp (AC o)        ts                     -> ppTerms (ppACOp o) 1 "(" ")" ts
+        FApp (C DHEMult)   ts                     -> ppTerms "*" 1 "(" ")" ts
         FApp (NoEq s)      [t1,t2] | s == expSym  -> ppTerm t1 <> text "^" <> ppTerm t2
         FApp (NoEq s)      [t1,t2] | s == diffSym -> text "diff" <> text "(" <> ppTerm t1 <> text ", " <> ppTerm t2 <> text ")"
         FApp (NoEq s)      _       | s == pairSym -> ppTerms ", " 1 "<" ">" (split t)
         FApp (NoEq (f, _)) []                     -> text (BC.unpack f)
         FApp (NoEq (f, _)) ts                     -> ppFun f ts
         FApp (C EMap)      ts                     -> ppFun emapSymString ts
-        FApp (C DHEMult)   ts                     -> ppFun dhEMultSymString ts
         FApp List          ts                     -> ppFun "LIST" ts
 
     ppACOp Mult  = "*"

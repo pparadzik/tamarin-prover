@@ -62,7 +62,7 @@ dhRules = S.fromList
 dhmRules :: Set (RRule LNTerm)
 dhmRules = S.fromList
     [ expo(x1, one) `RRule` x1
-    , expo(expo(x1, x2), x3) `RRule` expo(x1, (x2 *: x3))
+    , expo(expo(x1, x2), x3) `RRule` expo(x1, (x2 ***: x3))
     , expo(dhone, x1) `RRule` dhone
     , expo(dhinv x1, x2) `RRule` dhinv (expo(x1, x2))
 
