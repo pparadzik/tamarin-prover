@@ -1,0 +1,46 @@
+diff --git a/lib/term/src/Term/Rewriting/Norm.hs b/lib/term/src/Term/Rewriting/Norm.hs
+index 56a8805e..42e125bd 100644
+--- a/lib/term/src/Term/Rewriting/Norm.hs
++++ b/lib/term/src/Term/Rewriting/Norm.hs
+@@ -33,6 +33,7 @@ import           Term.Substitution
+ import           Term.SubtermRule
+ import           Term.Unification
+ 
++import Debug.Trace
+ ----------------------------------------------------------------------
+ -- Normalization using Maude
+ ----------------------------------------------------------------------
+@@ -59,6 +60,7 @@ nfViaHaskell t0 = reader $ \hnd -> check hnd
+     check hnd = go t0
+       where
+         go t = case viewTerm2 t of
++        -- go t = case trace("### nfViaHaskell\n:" ++ show(viewTerm2 t) ++ "\n") $ viewTerm2 t of
+             -- irreducible function symbols
+             FAppNoEq o ts | (NoEq o) `S.member` irreducible -> all go ts
+             FList ts                                        -> all go ts
+diff --git a/lib/theory/src/Theory/Constraint/Solver/Reduction.hs b/lib/theory/src/Theory/Constraint/Solver/Reduction.hs
+index 4c1d80ca..21079211 100644
+--- a/lib/theory/src/Theory/Constraint/Solver/Reduction.hs
++++ b/lib/theory/src/Theory/Constraint/Solver/Reduction.hs
+@@ -287,7 +287,8 @@ insertAction i fa@(Fact _ ann _) = do
+     nodePresent <- (i `M.member`) <$> getM sNodes
+     if present
+       then do return Unchanged
+-      else do case kFactView fa of
++      -- else do case kFactView fa of
++      else do case trace("### insertAction\n" ++ show(kFactView fa) ++ "\n") $ (kFactView fa) of
+                 Just (UpK, viewTerm2 -> FPair m1 m2) -> do
+                 -- In the diff case, add pair rule instead of goal
+                     if isdiff
+diff --git a/lib/theory/src/Theory/Constraint/Solver/Sources.hs b/lib/theory/src/Theory/Constraint/Solver/Sources.hs
+index bdf6f8ed..326ac4cd 100644
+--- a/lib/theory/src/Theory/Constraint/Solver/Sources.hs
++++ b/lib/theory/src/Theory/Constraint/Solver/Sources.hs
+@@ -184,6 +184,7 @@ solveAllSafeGoals ths' =
+                 ((\x -> (fmap return (solveGoal x), Nothing)) <$> headMay (safeGoals)) <|>
+                 (asum $ map (solveWithSourceAndReturn ctxt ths) usefulGoals)
+ 
++        trace("### safeGoals:\n" ++ show(safeGoals) ++ "\n") $ return()
+         -- Update the last chain conclusion term if next step is a 'safe' chain goal (kdPremGoals is empty)
+         lastChainTerm' <- case (kdPremGoals, safeGoals) of
+             ([], ((ChainG c _):_)) -> (\t -> return $ t <|> lastChainTerm) =<< kConcTerm c
