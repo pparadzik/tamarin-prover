@@ -51,7 +51,7 @@ naryOpApp :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 naryOpApp eqn plit = do
     op <- identifier
     --traceM $ show op ++ " " ++ show eqn
-    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor"])
+    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dhmult", "dhemult", "dhone", "dhinv"])
       $ error $ "`" ++ show op ++ "` is a reserved function name for builtins."
     (k,priv) <- lookupArity op
     ts <- parens $ if k == 1
@@ -68,7 +68,7 @@ naryOpApp eqn plit = do
 binaryAlgApp :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 binaryAlgApp eqn plit = do
     op <- identifier
-    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor"])
+    when (eqn && op `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "dhmult", "dhemult", "dhone", "dhinv"])
       $ error $ "`" ++ show op ++ "` is a reserved function name for builtins."
     (k,priv) <- lookupArity op
     arg1 <- braced (tupleterm eqn plit)
@@ -83,9 +83,9 @@ diffOp eqn plit = do
   when (2 /= length ts) $ fail
     "the diff operator requires exactly 2 arguments"
   diff <- enableDiff <$> getState
-  when eqn $ fail
+  when eqn $ fail $
     "diff operator not allowed in equations"
-  unless diff $ fail
+  when (not diff) $ fail $
     "diff operator found, but flag diff not set"
   let arg1 = head ts
   let arg2 = head (tail ts)
@@ -113,15 +113,17 @@ term plit eqn = asum
 
 -- | A left-associative sequence of exponentations.
 expterm :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
-expterm eqn plit = chainl1 (term plit eqn) (curry fAppExp <$ opExp)
+expterm eqn plit = chainl1 (term plit eqn) ((\a b -> fAppExp (a,b)) <$ opExp)
 
 -- | A left-associative sequence of multiplications.
 multterm :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
 multterm eqn plit = do
     dh <- enableDH <$> getState
-    if dh && not eqn -- if DH is not enabled, do not accept 'multterm's and 'expterm's
-        then chainl1 (expterm eqn plit) ((\a b -> fAppAC Mult [a,b]) <$ opMult)
-        else term plit eqn
+    dhm <- enableDHM <$> getState
+    case (dh, dhm, not eqn) of
+      (True, _, True) -> chainl1 (expterm eqn plit) ((\a b -> fAppAC Mult [a,b]) <$ opMult)
+      (_, True, True) -> chainl1 ( chainl1 (expterm eqn plit) ((\a b -> fAppAC DHMult [a,b]) <$ opDHMult) ) ((\a b -> fAppC DHEMult [a,b]) <$ opDHEMult)
+      (_, _, _) -> term plit eqn
 
 -- | A left-associative sequence of xors.
 xorterm :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
@@ -141,4 +143,4 @@ msetterm eqn plit = do
 
 -- | A right-associative sequence of tuples.
 tupleterm :: Ord l => Bool -> Parser (Term l) -> Parser (Term l)
-tupleterm eqn plit = chainr1 (msetterm eqn plit) (curry fAppPair <$ comma)
+tupleterm eqn plit = chainr1 (msetterm eqn plit) ((\a b -> fAppPair (a,b)) <$ comma)

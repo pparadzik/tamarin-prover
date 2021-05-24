@@ -71,6 +71,8 @@ builtins thy0 =do
           *> extendSig signatureMaudeSig
       , try (symbol "revealing-signing")
           *> extendSig revealSignatureMaudeSig
+      , try (symbol "multip-diffie-hellman")
+          *> extendSig dhmMaudeSig
       , try (symbol "locations-report")
           *>  do
           modifyState (`mappend` locationReportMaudeSig)
