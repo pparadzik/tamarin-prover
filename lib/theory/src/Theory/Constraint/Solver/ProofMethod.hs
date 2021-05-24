@@ -150,7 +150,6 @@ isPrivateKnowsGoal goal = case msgPremise goal of
 isDoubleExpGoal :: Goal -> Bool
 isDoubleExpGoal goal = case msgPremise goal of
     Just (viewTerm2 -> FExp  _ (viewTerm2 -> FMult _)) -> True
-    Just (viewTerm2 -> FExp  _ (viewTerm2 -> FDHEMult _)) -> True
     _                                                  -> False
 
 -- | @sortDecisionTree xs ps@ returns a reordering of @xs@
