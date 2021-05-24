@@ -179,7 +179,7 @@ viewTerm2 t@(FAPP (NoEq o) ts) = case ts of
     [ t1 ]     | o == invSym    -> FInv   t1
     [ t1 ]     | o == dhInvSym  -> FDHInv   t1
     []         | o == oneSym    -> One
-    []         | o == dhOneSym  -> One
+    []         | o == dhOneSym  -> DHOne
     _          | o `elem` ssyms -> error $ "viewTerm2: malformed term `"++show t++"'"
     _                           -> FAppNoEq o ts
   where
