@@ -163,7 +163,7 @@ ppTheory msig = BC.unlines $
        [ theoryOp "mun : Msg Msg -> Msg [comm assoc]" ]
        else [])
     ++
-    (if enableDH msig
+    (if (enableDH msig) && not (enableDHM msig)
        then
        [ theoryOp "one : -> Msg"
        , theoryOp "exp : Msg Msg -> Msg"
@@ -171,7 +171,7 @@ ppTheory msig = BC.unlines $
        , theoryOp "inv : Msg -> Msg" ]
        else [])
     ++
-    (if enableDHM msig
+    (if (enableDHM msig) && not (enableDH msig)
        then
        [ theoryOp "dhone : -> Msg"
        , theoryOp "one : -> Msg"
