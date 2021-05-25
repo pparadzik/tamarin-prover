@@ -106,7 +106,7 @@ maudeSig msig@(MaudeSig {enableDH,enableDHM,enableBP,enableMSet,enableXor,enable
     irreduciblefuns = allfuns `S.difference` reducible
     reducible =
         S.fromList [ o | CtxtStRule (viewTerm -> FApp o _) _ <- S.toList stRules ]
-          `S.union` dhReducibleFunSig `S.union` bpReducibleFunSig `S.union` xorReducibleFunSig
+          `S.union` dhReducibleFunSig `S.union` bpReducibleFunSig `S.union` xorReducibleFunSig `S.union` dhmReducibleFunSig
 
 -- | A monoid instance to combine maude signatures.
 instance Semigroup MaudeSig where
