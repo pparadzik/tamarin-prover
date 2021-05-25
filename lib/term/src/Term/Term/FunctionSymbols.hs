@@ -195,7 +195,7 @@ dhReducibleFunSig = S.fromList [ NoEq expSym, NoEq invSym ]
 
 -- | Reducible function symbols for DH multiplication.
 dhmReducibleFunSig :: FunSig
-dhmReducibleFunSig = S.fromList [ AC DHMult, C DHEMult, NoEq expSym, NoEq dhInvSym ]
+dhmReducibleFunSig = S.fromList [ AC DHMult, NoEq expSym, NoEq dhInvSym ]
 
 -- | Reducible function symbols for BP.
 bpReducibleFunSig :: FunSig
