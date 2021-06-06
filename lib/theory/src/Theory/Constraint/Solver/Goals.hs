@@ -48,7 +48,7 @@ import           Extension.Data.Label                    as L
 import           Theory.Constraint.Solver.Contradictions (substCreatesNonNormalTerms)
 import           Theory.Constraint.Solver.Reduction
 import           Theory.Constraint.System
-import           Theory.Tools.IntruderRules (mkDUnionRule, isDExpRule, isDPMultRule, isDEMapRule)
+import           Theory.Tools.IntruderRules (mkDUnionRule, isDExpRule, isDPMultRule, isDEMapRule, isDHMultRule, isDHInvRule)
 import           Theory.Model
 
 import           Utils.Misc                              (twoPartitions)
@@ -306,6 +306,8 @@ solveChain :: [RuleAC]              -- ^ All destruction rules.
 solveChain rules (c, p) = do
     faConc  <- gets $ nodeConcFact c
     (do -- solve it by a direct edge
+
+
         cRule <- gets $ nodeRule (nodeConcNode c)
         pRule <- gets $ nodeRule (nodePremNode p)
         faPrem <- gets $ nodePremFact p
@@ -369,6 +371,7 @@ solveChain rules (c, p) = do
     -- no more than the allowed consecutive rule applications
     forbiddenEdge :: RuleACInst -> RuleACInst -> Bool
     forbiddenEdge cRule pRule = isDExpRule   cRule && isDExpRule  pRule  ||
+                                isDHMultRule  cRule && (isDHMultRule  pRule)  ||
                                 isDPMultRule cRule && isDPMultRule pRule ||
                                 isDPMultRule cRule && isDEMapRule  pRule ||
                                 (getRuleName cRule == getRuleName pRule)

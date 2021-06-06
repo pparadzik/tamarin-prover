@@ -65,6 +65,7 @@ data Contradiction =
   | NonNormalTerms                 -- ^ Has terms that are not in normal form.
   -- | NonLastNode                    -- ^ Has a non-silent node after the last node.
   | ForbiddenExp                   -- ^ Forbidden Exp-down rule instance
+  | ForbiddenDHM                   -- ^ Forbidden DHM rule instance
   | ForbiddenBP                    -- ^ Forbidden bilinear pairing rule instance
   | ForbiddenKD                    -- ^ has forbidden KD-fact
   | ImpossibleChain                -- ^ has impossible chain
@@ -98,6 +99,8 @@ contradictions ctxt sys = F.asum
     , guard (hasImpossibleChain ctxt sys)           *> pure ImpossibleChain
     -- CR-rule *N7*
     , guard (enableDH msig && hasForbiddenExp sys)  *> pure ForbiddenExp
+    -- FIXME: add CR-rule
+    , guard (enableDHM msig && hasForbiddenDHM sys)  *> pure ForbiddenDHM
     -- FIXME: add CR-rule
     , guard (enableBP msig && hasForbiddenBP sys)   *> pure ForbiddenBP
     -- New CR-Rule *N6'*
@@ -322,6 +325,33 @@ hasForbiddenExp sys =
                                 guard $ isMsgVar t && alwaysBefore sys j i
                                 return t
 
+-- | 'True' if there is a @dhmult-down@ rule that is not allowed in
+-- a normal dependency graph.
+hasForbiddenDHM :: System -> Bool
+hasForbiddenDHM sys =
+    any forbiddenDExp $ M.toList $ L.get sNodes sys
+  where
+    forbiddenDExp (i,ru) = fromMaybe False $ do
+        [p1,p2] <- return $ L.get rPrems ru
+        [conc]  <- return $ L.get rConcs ru
+        (DnK, _) <- kFactView p1
+        (UpK, b) <- kFactView p2
+        case kFactView conc of
+          Just (DnK, c) ->
+              -- For a forbidden dhmult, the following conditions must hold:
+              -- all msg vars in c must be KU-known earlier,
+              -- and the factors of c are already factors of b
+              return $    (allMsgVarsKnownEarlier i (varTerm <$> frees c))
+                       && (niFactors c \\ niFactors b == [])
+          _                                -> return False
+
+    allMsgVarsKnownEarlier i args =
+        all (`elem` earlierMsgVars) (filter isMsgVar args)
+      where earlierMsgVars = do (j, _, t) <- allKUActions sys
+                                guard $ isMsgVar t && alwaysBefore sys j i
+                                return t
+
+
 -- | 'True' if there is a @Pmult-down@ or @Em-down@ rule that
 -- is not allowed in a normal dependency graph.
 hasForbiddenBP :: System -> Bool
@@ -431,6 +461,7 @@ prettyContradiction contra = case contra of
     IncompatibleEqs              -> text "incompatible equalities"
     NonNormalTerms               -> text "non-normal terms"
     ForbiddenExp                 -> text "non-normal exponentiation rule instance"
+    ForbiddenDHM                 -> text "non-normal diffie-hellman multiplication rule instance"
     ForbiddenBP                  -> text "non-normal bilinear pairing rule instance"
     ForbiddenKD                  -> text "forbidden KD-fact"
     ForbiddenChain               -> text "forbidden chain"
