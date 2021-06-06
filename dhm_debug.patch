@@ -1,0 +1,223 @@
+diff --git a/lib/term/src/Term/Builtin/Rules.hs b/lib/term/src/Term/Builtin/Rules.hs
+index e84e52ba..2484aa19 100644
+--- a/lib/term/src/Term/Builtin/Rules.hs
++++ b/lib/term/src/Term/Builtin/Rules.hs
+@@ -61,7 +61,8 @@ dhRules = S.fromList
+ --   with the finite variant property.
+ dhmRules :: Set (RRule LNTerm)
+ dhmRules = S.fromList
+-    [ expo(x1, one) `RRule` x1
++    [
++      expo(x1, one) `RRule` x1
+     , expo(expo(x1, x2), x3) `RRule` expo(x1, (x2 ***: x3))
+     , expo(dhone, x1) `RRule` dhone
+     , expo(dhinv x1, x2) `RRule` dhinv (expo(x1, x2))
+@@ -75,6 +76,7 @@ dhmRules = S.fromList
+     , dhinv (dhinv x1 **: x2) `RRule` (x1 **: dhinv x2)
+     , x1 **: (dhinv (x1) **: x2) `RRule` x2
+     , dhinv x1 **: (dhinv x2 **: x3) `RRule` (dhinv (x1 **: x2) **: x3)
++    --- This loops
+     , dhinv (x1 **: x2) **: (x2 **: x3) `RRule` (dhinv x1 **: x3)
+     ]
+   where
+diff --git a/lib/term/src/Term/Rewriting/Norm.hs b/lib/term/src/Term/Rewriting/Norm.hs
+index 7d7a308f..8b431725 100644
+--- a/lib/term/src/Term/Rewriting/Norm.hs
++++ b/lib/term/src/Term/Rewriting/Norm.hs
+@@ -33,6 +33,7 @@ import           Term.Substitution
+ import           Term.SubtermRule
+ import           Term.Unification
+ 
++import Debug.Trace
+ ----------------------------------------------------------------------
+ -- Normalization using Maude
+ ----------------------------------------------------------------------
+@@ -41,7 +42,10 @@ import           Term.Unification
+ norm :: (IsConst c)
+      => (c -> LSort) -> LTerm c -> WithMaude (LTerm c)
+ norm _      t@(viewTerm -> Lit _) = return t
+-norm sortOf t         = reader $ \hnd -> unsafePerformIO $ normViaMaude hnd sortOf t
++norm sortOf t         =
++  reader $ \hnd ->
++  traceStack ("### norm: " ++ show(t) ++ "\n") $
++  unsafePerformIO $ normViaMaude hnd sortOf t
+ 
+ -- | @norm' t@ normalizes the term @t@ using Maude.
+ norm' :: LNTerm -> WithMaude LNTerm
+@@ -58,7 +62,8 @@ nfViaHaskell t0 = reader $ \hnd -> check hnd
+   where
+     check hnd = go t0
+       where
+-        go t = case viewTerm2 t of
++        -- go t = case viewTerm2 t of
++        go t = case trace("### viewTerm2: " ++ show(viewTerm2 t) ++ "\n") $ viewTerm2 t of
+             -- irreducible function symbols
+             FAppNoEq o ts | (NoEq o) `S.member` irreducible -> all go ts
+             FList ts                                        -> all go ts
+diff --git a/lib/theory/src/Theory/Constraint/Solver/Goals.hs b/lib/theory/src/Theory/Constraint/Solver/Goals.hs
+index 099d57b1..7e4cfbcf 100644
+--- a/lib/theory/src/Theory/Constraint/Solver/Goals.hs
++++ b/lib/theory/src/Theory/Constraint/Solver/Goals.hs
+@@ -371,7 +371,9 @@ solveChain rules (c, p) = do
+     -- no more than the allowed consecutive rule applications
+     forbiddenEdge :: RuleACInst -> RuleACInst -> Bool
+     forbiddenEdge cRule pRule = isDExpRule   cRule && isDExpRule  pRule  ||
+-                                isDHMultRule  cRule && (isDHMultRule  pRule)  ||
++                                -- isDHMultRule  cRule && (isDHMultRule  pRule)  ||
++                                -- NOTE DHM: Did we miss any derivation here? I think we did!
++                                isDHMultRule  cRule && (isDHMultRule  pRule) || (isDHInvRule  pRule)  ||
+                                 isDPMultRule cRule && isDPMultRule pRule ||
+                                 isDPMultRule cRule && isDEMapRule  pRule ||
+                                 (getRuleName cRule == getRuleName pRule)
+diff --git a/lib/theory/src/Theory/Constraint/Solver/Sources.hs b/lib/theory/src/Theory/Constraint/Solver/Sources.hs
+index bdf6f8ed..6174aebb 100644
+--- a/lib/theory/src/Theory/Constraint/Solver/Sources.hs
++++ b/lib/theory/src/Theory/Constraint/Solver/Sources.hs
+@@ -130,6 +130,7 @@ solveAllSafeGoals ths' =
+ --      (getEnv "TAMARIN_EXTENSIVE_SPLIT" >> return True) `catchIOError` \_ -> return False
+     safeGoal _       _          (_,   (_, LoopBreaker)) = False
+     safeGoal doSplit chainsLeft (goal, _              ) =
++      trace ("### safeGoal:\n" ++ "chainsLeft: " ++ show(chainsLeft) ++ "\n" ++ "goal: " ++ show(goal) ++ "\n") $
+       case goal of
+         ChainG _ _    -> if (chainsLeft > 0)
+                             then True
+@@ -161,9 +162,18 @@ solveAllSafeGoals ths' =
+         -- Filter out chain goals where the term in the conclusion is identical to one we just solved,
+         -- as this indicates our chain can loop
+         filteredGoals <- filterM  (\(g,_) -> case g of
+-            (ChainG c _) -> (\x -> return $ Just True /= liftM2 eqModuloFreshnessNoAC lastChainTerm x) =<< kConcTerm c
++            -- (ChainG c _) -> (\x -> return $ Just True /= liftM2 eqModuloFreshnessNoAC lastChainTerm x) =<< kConcTerm c
++            (ChainG c _) -> (\x ->
++                               trace ("### x = " ++ show(x) ++ ";   lastChainTerm: " ++ show(lastChainTerm) ++ ";    eqModuloFreshnessNoAC: " ++ show(liftM2 eqModuloFreshnessNoAC lastChainTerm x) ++ "\n") $
++                               return $ Just True /= liftM2 eqModuloFreshnessNoAC lastChainTerm x) =<< kConcTerm c
+             _            -> return True) goals
+ 
++        ---
++        sysorg <- gets id
++        trace ("### system:\n" ++ show(sysorg) ++ "\n\n" ++ "### goals:\n" ++ show(goals) ++ "\n"
++               ++ "### filteredGoals:\n" ++ show(filteredGoals) ++ "\n" ++ "### chains:\n" ++ show(chains) ++ "\n"
++               ++ "### lastChainTerm: " ++ show(lastChainTerm) ++ "\n") $ return ()
++        ---
+         -- try to either solve a safe goal or use one of the precomputed case
+         -- distinctions
+         let noChainGoals = null [ () | (ChainG _ _, _) <- goals ]
+@@ -361,7 +371,7 @@ precomputeSources
+     :: ProofContext
+     -> [LNGuarded]       -- ^ Restrictions.
+     -> [Source]
+-precomputeSources ctxt restrictions =
++precomputeSources ctxt restrictions = 
+     map cleanupCaseNames (saturateSources ctxt rawSources)
+   where
+     cleanupCaseNames = modify cdCases $ fmap $ first $
+diff --git a/lib/theory/src/Theory/Constraint/System.hs b/lib/theory/src/Theory/Constraint/System.hs
+index 2503fdf7..a4aff8f9 100644
+--- a/lib/theory/src/Theory/Constraint/System.hs
++++ b/lib/theory/src/Theory/Constraint/System.hs
+@@ -196,7 +196,7 @@ module Theory.Constraint.System (
+ 
+   ) where
+ 
+--- import           Debug.Trace
++import           Debug.Trace
+ -- import           Debug.Trace.Ignore
+ 
+ import           Prelude                              hiding (id, (.))
+@@ -896,9 +896,11 @@ doRestrictionsHold ctxt sys formulas isSolved = -- Just (True, [sys]) -- FIXME J
+ 
+ -- | Normalizes all terms in the dependency graph.
+ normDG :: ProofContext -> System -> System
+-normDG ctxt sys = L.set sNodes normalizedNodes sys
++normDG ctxt sys =
++  L.set sNodes normalizedNodes sys
+   where
+     normalizedNodes = M.map (\r -> runReader (normRule r) (L.get pcMaudeHandle ctxt)) (L.get sNodes sys)
++    -- normalizedNodes = M.map (\r -> trace("### normDG rule: " ++ show(r) ++ "\n") $ runReader (normRule r) (L.get pcMaudeHandle ctxt)) (L.get sNodes sys)
+ 
+ -- | Returns the mirrored DGs, if they exist.
+ getMirrorDG :: DiffProofContext -> Side -> System -> [System]
+@@ -1211,6 +1213,7 @@ kuActionAtoms sys = do
+ unsolvedChains :: System -> [(NodeConc, NodePrem)]
+ unsolvedChains sys = do
+     (ChainG from to, status) <- M.toList $ L.get sGoals sys
++    trace ("### unsolvedChains: " ++ show((ChainG from to, status)) ++ "\n") $ return ()
+     guard (not $ L.get gsSolved status)
+     return (from, to)
+ 
+diff --git a/lib/theory/src/Theory/Model/Fact.hs b/lib/theory/src/Theory/Model/Fact.hs
+index c715da00..6ef8cc85 100644
+--- a/lib/theory/src/Theory/Model/Fact.hs
++++ b/lib/theory/src/Theory/Model/Fact.hs
+@@ -116,6 +116,7 @@ import           Term.Rewriting.Norm
+ import           Text.PrettyPrint.Class
+ 
+ 
++import Debug.Trace
+ ------------------------------------------------------------------------------
+ -- Fact
+ ------------------------------------------------------------------------------
+diff --git a/lib/theory/src/Theory/Model/Rule.hs b/lib/theory/src/Theory/Model/Rule.hs
+index 33620fae..e00a4d36 100644
+--- a/lib/theory/src/Theory/Model/Rule.hs
++++ b/lib/theory/src/Theory/Model/Rule.hs
+@@ -187,7 +187,7 @@ import qualified Theory.Model.Formula as F
+ import           Theory.Text.Pretty
+ import           Theory.Sapic
+ 
+--- import           Debug.Trace
++import           Debug.Trace
+ 
+ ------------------------------------------------------------------------------
+ -- General Rule
+@@ -685,7 +685,9 @@ isSubtermRule ru = case ruleName ru of
+ 
+ -- | True if the messages in premises and conclusions are in normal form
+ nfRule :: Rule i -> WithMaude Bool
+-nfRule (Rule _ ps cs as nvs) = reader $ \hnd ->
++nfRule (Rule _ ps cs as nvs) =
++  -- trace ("### nfRule: " ++ show(ps) ++ "\n") $
++  reader $ \hnd ->
+     all (nfFactList hnd) [ps, cs, as, map termFact nvs]
+   where
+     nfFactList hnd xs =
+@@ -693,7 +695,8 @@ nfRule (Rule _ ps cs as nvs) = reader $ \hnd ->
+ 
+ -- | Normalize all terms in premises, actions and conclusions
+ normRule :: Rule i -> WithMaude (Rule i)
+-normRule (Rule rn ps cs as nvs) = reader $ \hnd -> (Rule rn (normFacts ps hnd) (normFacts cs hnd) (normFacts as hnd) (normTerms nvs hnd))
++normRule (Rule rn ps cs as nvs) =
++  reader $ \hnd -> (Rule rn (normFacts ps hnd) (normFacts cs hnd) (normFacts as hnd) (normTerms nvs hnd))
+   where
+     normFacts fs hnd' = map (\f -> runReader (normFact f) hnd') fs
+     normTerms fs hnd' = map (\f -> runReader (norm' f) hnd') fs
+diff --git a/lib/theory/src/Theory/Tools/RuleVariants.hs b/lib/theory/src/Theory/Tools/RuleVariants.hs
+index 243d5d16..b636058a 100644
+--- a/lib/theory/src/Theory/Tools/RuleVariants.hs
++++ b/lib/theory/src/Theory/Tools/RuleVariants.hs
+@@ -41,7 +41,8 @@ import qualified Data.Set                         as S
+ -- import qualified Data.Binary as B
+ -- import qualified Data.ByteString.Lazy as BS
+ 
+-import           Debug.Trace.Ignore 
++-- import           Debug.Trace.Ignore
++import           Debug.Trace
+ 
+  
+ tmpdir :: FilePath
+@@ -73,6 +74,7 @@ variantsProtoRule hnd ru@(Rule (ProtoRuleEInfo na attr _) prems0 concs0 acts0 nv
+                                    composeVFresh vsubst abstractionSubst
+                                | vsubst <- variantSubsts ]
+ 
++        trace("### substs:\n" ++ show(substs) ++ "\n") $ return ()
+         case substs of
+           [] -> error $ "variantsProtoRule: rule has no variants `"++show ru++"'"
+           _  -> do
+@@ -96,7 +98,7 @@ variantsProtoRule hnd ru@(Rule (ProtoRuleEInfo na attr _) prems0 concs0 acts0 nv
+               <*> mapM abstrFact acts0
+               <*> mapM abstrTerm nvs0
+ 
+-    irreducible = irreducibleFunSyms (mhMaudeSig hnd)
++    irreducible = trace("### irreducible:\n" ++ show(irreducibleFunSyms (mhMaudeSig hnd)) ++ "\n") $ irreducibleFunSyms (mhMaudeSig hnd)
+     abstrFact = traverse abstrTerm
+     abstrTerm (viewTerm -> FApp o args) | o `S.member` irreducible =
+         fApp o <$> mapM abstrTerm args
