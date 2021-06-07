@@ -48,7 +48,7 @@ import           Extension.Data.Label                    as L
 import           Theory.Constraint.Solver.Contradictions (substCreatesNonNormalTerms)
 import           Theory.Constraint.Solver.Reduction
 import           Theory.Constraint.System
-import           Theory.Tools.IntruderRules (mkDUnionRule, isDExpRule, isDPMultRule, isDEMapRule, isDHMultRule, isDHInvRule)
+import           Theory.Tools.IntruderRules (mkDUnionRule, isDExpRule, isDPMultRule, isDEMapRule, isDDHMultRule, isDDHInvRule)
 import           Theory.Model
 
 import           Utils.Misc                              (twoPartitions)
@@ -371,7 +371,9 @@ solveChain rules (c, p) = do
     -- no more than the allowed consecutive rule applications
     forbiddenEdge :: RuleACInst -> RuleACInst -> Bool
     forbiddenEdge cRule pRule = isDExpRule   cRule && isDExpRule  pRule  ||
-                                isDHMultRule  cRule && (isDHMultRule  pRule)  ||
+                                -- isDHMultRule  cRule && (isDHMultRule  pRule)  ||
+                                -- NOTE DHM: Did we miss any derivation here? I think we did!
+                                isDDHMultRule  cRule && (isDDHMultRule  pRule) || (isDDHInvRule  pRule)  ||
                                 isDPMultRule cRule && isDPMultRule pRule ||
                                 isDPMultRule cRule && isDEMapRule  pRule ||
                                 (getRuleName cRule == getRuleName pRule)

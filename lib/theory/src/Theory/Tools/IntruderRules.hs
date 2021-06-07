@@ -24,8 +24,8 @@ module Theory.Tools.IntruderRules (
   , isDExpRule
   , isDEMapRule
   , isDPMultRule
-  , isDHMultRule
-  , isDHInvRule
+  , isDDHMultRule
+  , isDDHInvRule
   ) where
 
 import           Control.Basics hiding (empty)
@@ -480,10 +480,10 @@ isDRule ruString ru = case get rInfo ru of
     IntrInfo (DestrRule n _ _ _) | n == (append (pack "_") ruString) -> True
     _                                                                -> False
 
-isDExpRule, isDPMultRule, isDEMapRule, isDHMultRule, isDHInvRule
+isDExpRule, isDPMultRule, isDEMapRule, isDDHMultRule, isDDHInvRule
     :: Rule (RuleInfo t IntrRuleACInfo) -> Bool
 isDExpRule   = isDRule expSymString
 isDPMultRule = isDRule pmultSymString
 isDEMapRule  = isDRule emapSymString
-isDHMultRule = isDRule dhMultSymString
-isDHInvRule  = isDRule dhInvSymString
+isDDHMultRule = isDRule dhMultSymString
+isDDHInvRule  = isDRule dhInvSymString
