@@ -371,9 +371,10 @@ solveChain rules (c, p) = do
     -- no more than the allowed consecutive rule applications
     forbiddenEdge :: RuleACInst -> RuleACInst -> Bool
     forbiddenEdge cRule pRule = isDExpRule   cRule && isDExpRule  pRule  ||
-                                -- isDHMultRule  cRule && (isDHMultRule  pRule)  ||
-                                -- NOTE DHM: Did we miss any derivation here? I think we did!
-                                isDDHMultRule  cRule && (isDDHMultRule  pRule) || (isDDHInvRule  pRule)  ||
+                                isDDHMultRule  cRule && isDDHMultRule  pRule  ||
+                                -- NOTE DHM: Did we miss any derivation here with the following two constraints?
+                                isDDHInvRule  cRule && isDDHInvRule  pRule ||
+                                isDDHInvRule  cRule && isDDHMultRule  pRule ||
                                 isDPMultRule cRule && isDPMultRule pRule ||
                                 isDPMultRule cRule && isDEMapRule  pRule ||
                                 (getRuleName cRule == getRuleName pRule)
