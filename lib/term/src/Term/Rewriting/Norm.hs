@@ -80,12 +80,12 @@ nfViaHaskell t0 = reader $ \hnd -> check hnd
             FInv (viewTerm2 -> One)                         -> False
             -- DH inverses
             FDHInv (viewTerm2 -> FDHInv _)                      -> False
-            FDHInv (viewTerm2 -> FDHMult ts) | any isInverse ts -> False
+            FDHInv (viewTerm2 -> FDHMult ts) | any isDHInverse ts -> False
             FDHInv (viewTerm2 -> DHOne)                         -> False
             -- multiplication
             FMult ts | fAppOne `elem` ts  || any isProduct ts || invalidMult ts   -> False
             -- DH multiplication
-            FDHMult ts | fAppDHone `elem` ts  || any isProduct ts || invalidDHMult ts   -> False
+            FDHMult ts | fAppDHone `elem` ts  || any isDHProduct ts || invalidDHMult ts   -> False
             -- xor
             FXor ts | fAppZero `elem` ts  || any isXor ts || invalidXor ts   -> False
             -- point multiplication
@@ -124,7 +124,7 @@ nfViaHaskell t0 = reader $ \hnd -> check hnd
             (_:_:_, _) -> True
             _          -> False
 
-        invalidDHMult ts = case partition isInverse ts of
+        invalidDHMult ts = case partition isDHInverse ts of
             ([],_)     -> False
             ([ viewTerm2 -> FDHInv (viewTerm2 -> FDHMult ifactors) ], factors) ->
                 (ifactors \\ factors /= ifactors) || (factors \\ ifactors /= factors)

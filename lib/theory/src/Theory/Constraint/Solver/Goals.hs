@@ -92,7 +92,7 @@ openGoals sys = do
                     -- message variables are not solved, except if the node already exists in the system -> facilitates finding contradictions
                     || (isMsgVar m && Nothing == M.lookup i (get sNodes sys)) || sortOfLNTerm m == LSortPub
                     -- handled by 'insertAction'
-                    || isPair m || isInverse m || isProduct m --- || isXor m
+                    || isPair m || isInverse m || {--isDHInverse m ||-} isProduct m {--|| isDHProduct m--} --- || isXor m
                     || isUnion m || isNullaryPublicFunction m
         ActionG _ _                               -> not solved
         PremiseG _ _                              -> not solved

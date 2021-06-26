@@ -75,9 +75,9 @@ dhmRules = S.fromList
     , dhinv (dhinv x1 **: x2) `RRule` (x1 **: dhinv x2)
     , x1 **: (dhinv (x1) **: x2) `RRule` x2
     , dhinv x1 **: (dhinv x2 **: x3) `RRule` (dhinv (x1 **: x2) **: x3)
-    --- NOTE DHM: This loops without the "mult -> inv" deconstruction chain
-    --- constraint
     , dhinv (x1 **: x2) **: (x2 **: x3) `RRule` (dhinv x1 **: x3)
+
+    , expo(expo(x1,x2) **: expo(x3,x4), x5) `RRule` (expo(expo(x1,x2),x5) **: expo(expo(x3,x4),x5))
     ]
   where
     expo = fAppExp

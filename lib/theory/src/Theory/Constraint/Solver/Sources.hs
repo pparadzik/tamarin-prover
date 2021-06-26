@@ -138,6 +138,7 @@ solveAllSafeGoals ths' =
         -- we do not solve KD goals for Xor facts as insertAction inserts
         -- these goals directly. This prevents loops in the precomputations
         PremiseG _ fa -> not (isKUFact fa) && not (isKDXorFact fa) && not (isNoSourcesFact fa)
+        -- PremiseG _ fa -> not (isKUFact fa) && not (isKDXorFact fa) && not (isNoSourcesFact fa) && not (isKDDHProdFact fa)
         DisjG _       -> doSplit
         -- Uncomment to get more extensive case splitting
         SplitG _      -> doSplit --extensiveSplitting &&
@@ -147,6 +148,7 @@ solveAllSafeGoals ths' =
     usefulGoal _                = False
 
     isKDPrem (PremiseG _ fa,_) = (isKDFact fa) && (not (isKDXorFact fa))
+    -- isKDPrem (PremiseG _ fa,_) = (isKDFact fa) && (not (isKDXorFact fa)) && (not (isKDDHProdFact fa))
     isKDPrem _                 = False
     isChainPrem1 (ChainG _ (_,PremIdx 1),_) = True
     isChainPrem1 _                          = False
