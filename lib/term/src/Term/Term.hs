@@ -174,6 +174,7 @@ isDHInverse _                     = False
 -- | 'True' iff the term is a well-formed product.
 isProduct :: Show a => Term a -> Bool
 isProduct (viewTerm2 -> FMult _) = True
+isProduct (viewTerm2 -> FDHEMult _) = True
 isProduct _                      = False
 
 -- | 'True' iff the term is a well-formed Diffie-Hellman product.
