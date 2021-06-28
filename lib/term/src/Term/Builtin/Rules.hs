@@ -77,7 +77,9 @@ dhmRules = S.fromList
     , dhinv x1 **: (dhinv x2 **: x3) `RRule` (dhinv (x1 **: x2) **: x3)
     , dhinv (x1 **: x2) **: (x2 **: x3) `RRule` (dhinv x1 **: x3)
 
+    -- , expo(x1, x3) **: expo(x2, x3) `RRule` expo(x1 **: x2, x3)
     , expo(expo(x1,x2) **: expo(x3,x4), x5) `RRule` (expo(expo(x1,x2),x5) **: expo(expo(x3,x4),x5))
+    , expo(expo(x1,x2) **: expo(x3,x4) **: expo(x5,x6), x7) `RRule` (expo(expo(x1,x2),x7) **: expo(expo(x3,x4),x7) **: expo(expo(x5,x6),x7))
     ]
   where
     expo = fAppExp
