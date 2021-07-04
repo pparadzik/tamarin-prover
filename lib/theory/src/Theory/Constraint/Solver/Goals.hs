@@ -390,8 +390,8 @@ solveChain rules (c, p) = do
                                 -- NOTE DHM: Did we miss any derivation here with the following three constraints?
                                 isDDHInvRule  cRule && isDDHInvRule  pRule ||
                                 isDDHInvRule  cRule && isDDHMultRule  pRule ||
-                                isDDHInvRule  cRule && isDExpRule  pRule ||
-                                isDDHMultRule  cRule && isDExpRule  pRule ||
+                                isDExpRule  cRule && isDDHInvRule  pRule ||
+                                isDExpRule  cRule && isDDHMultRule  pRule ||
 
                                 isDPMultRule cRule && isDPMultRule pRule ||
                                 isDPMultRule cRule && isDEMapRule  pRule ||
