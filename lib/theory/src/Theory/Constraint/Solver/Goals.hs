@@ -389,9 +389,9 @@ solveChain rules (c, p) = do
 
                                 -- NOTE DHM: Did we miss any derivation here with the following three constraints?
                                 isDDHInvRule  cRule && isDDHInvRule  pRule ||
-                                isDDHInvRule  cRule && isDDHMultRule  pRule ||
-                                isDExpRule  cRule && isDDHInvRule  pRule ||
-                                isDExpRule  cRule && isDDHMultRule  pRule ||
+                                isDDHMultRule  cRule && isDDHInvRule  pRule ||
+                                isDDHInvRule  cRule && isDExpRule  pRule ||
+                                isDDHMultRule  cRule && isDExpRule  pRule ||
 
                                 isDPMultRule cRule && isDPMultRule pRule ||
                                 isDPMultRule cRule && isDEMapRule  pRule ||
@@ -402,6 +402,7 @@ solveChain rules (c, p) = do
     -- No coerce of a pair of inverse.
     illegalCoerce pRule mPrem = isCoerceRule pRule && isPair    mPrem ||
                                 isCoerceRule pRule && isInverse mPrem ||
+                                isCoerceRule pRule && isDHInverse mPrem ||
     -- Also: Coercing of products is unnecessary, since the protocol is *-restricted.
                                 isCoerceRule pRule && isProduct mPrem
 
