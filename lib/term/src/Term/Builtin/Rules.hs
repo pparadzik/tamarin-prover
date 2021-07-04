@@ -61,10 +61,10 @@ dhRules = S.fromList
 --   with the finite variant property.
 dhmRules :: Set (RRule LNTerm)
 dhmRules = S.fromList
-    [ expo(x1, one) `RRule` x1
-    , expo(expo(x1, x2), x3) `RRule` expo(x1, (x2 ***: x3))
+    [ expo(expo(x1, x2), x3) `RRule` expo(x1, (x2 ***: x3))
     , expo(dhone, x1) `RRule` dhone
     , expo(dhinv x1, x2) `RRule` dhinv (expo(x1, x2))
+    -- , expo(x1, one) `RRule` x1
 
     , x1 **: dhone `RRule` x1
     , dhinv (dhinv x1) `RRule` x1
@@ -85,7 +85,7 @@ dhmRules = S.fromList
     expo = fAppExp
     dhinv = fAppDHinv
     dhone = fAppDHone
-    one = fAppOne
+    -- one = fAppOne
 
 -- | The rewriting rules for bilinear pairing. These rules extend the
 --   the rules for Diffie-Hellman.
